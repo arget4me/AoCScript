@@ -109,7 +109,7 @@ void Tokenizer::print(Token token)
 			std::cout << "ID:" << token.value_str << " ";
 			break;
 		case TokenType::SEMICOLON:
-			std::cout << "SEMICOLON" << " ";
+			std::cout << "SEMICOLON\n" << " ";
 			break;
 		case TokenType::EQUALS:
 			std::cout << "EQUALS" << " ";

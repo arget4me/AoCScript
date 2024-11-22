@@ -1,4 +1,8 @@
 #pragma once
+#include <string>
+#include <iostream>
+#include <vector>
+#include "Tokenizer.h"
 
 class TreeNode
 {
@@ -84,4 +88,36 @@ public:
 	int num;
 public:
 	virtual void print() { std::cout << num; }
+};
+
+class Parser
+{
+/* =======================================================================================================
+											GRAMMAR
+   =======================================================================================================
+		Program				::= {Statement}
+		Statement			::= Assignment ";"
+								| PrintStatement ";"
+		Assignment			::= Identifier "=" Expression
+		PrintStatement		::= "print" Expression
+		Expression			::= Term { ("+" | "-") Term}
+		Term				::= Factor { ("*" | "/") Factor}
+		Factor				::= Number
+								| Identifier
+								| "(" Expression ")"
+		Identifier			::= Letter { Letter | Digit }
+		Number				::= Digit { Digit }
+		Letter				::=	"a" | ... |"z" | "A" | ... | "Z"    // Any alphabetical character, [a-zA-Z]
+		Digit				::= "0" | ... | "9"						// Any numeric digit [0-9]
+   ======================================================================================================= */
+
+public:
+	Parser(std::string code);
+	~Parser();
+	TreeNode* getAST() { return ast; };
+
+private:
+	Tokenizer tokenizer;
+	TreeNode* ast;
+	std::vector<TreeNode*> nodes;
 };
