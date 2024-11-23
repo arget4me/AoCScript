@@ -5,11 +5,11 @@
 bool Tokenizer::scanToken()
 {
 	static const std::vector<std::pair<std::regex, TokenType>> tokenMap = {
+		std::pair<std::regex, TokenType>{std::regex(R"(^simon says\b|^print\b)")			, TokenType::PRINT},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")				, TokenType::PLUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^-)")				, TokenType::MINUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^=)")				, TokenType::EQUALS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^;)")				, TokenType::SEMICOLON},
-		std::pair<std::regex, TokenType>{std::regex(R"(^print)")			, TokenType::PRINT},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\d+\b)")			, TokenType::INTEGER},
 		std::pair<std::regex, TokenType>{std::regex(R"(^[a-zA-Z][\w]*\b)")	, TokenType::ID},
 	};
@@ -55,7 +55,7 @@ void Tokenizer::print(Token token)
 			std::cout << "-" << " ";
 			break;
 		case TokenType::ID:
-			std::cout << token.value << " ";
+			std::cout << "\"" << token.value << "\"" << " ";
 			break;
 		case TokenType::SEMICOLON:
 			std::cout << ";\n";
@@ -64,7 +64,7 @@ void Tokenizer::print(Token token)
 			std::cout << "=" << " ";
 			break;
 		case TokenType::PRINT:
-			std::cout << "print" << " ";
+			std::cout << "print:" << " ";
 			break;
 		case TokenType::END:
 			std::cout << "\n";

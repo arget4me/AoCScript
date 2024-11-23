@@ -100,6 +100,7 @@ class Parser
 								| PrintStatement ";"
 		Assignment			::= Identifier "=" Expression
 		PrintStatement		::= "print" Expression
+							::= "simon says" Expression
 		Expression			::= Term { ("+" | "-") Term}
 		Term				::= Factor { ("*" | "/") Factor}
 		Factor				::= Number
