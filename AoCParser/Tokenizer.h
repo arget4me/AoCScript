@@ -17,9 +17,10 @@ enum class TokenType
 class Token
 {
 public:
+	Token() : type(TokenType::END), value("") {}
+	Token(TokenType type, std::string value) : type(type), value(value) {}
 	TokenType type;
-	int value_int;
-	std::string value_str;
+	std::string value;
 };
 
 class IntegerToken : public Token
@@ -35,7 +36,7 @@ public:
 class Tokenizer
 {
 public:
-	Tokenizer(std::string code) : code(code), head(0) { scanToken(); };
+	Tokenizer(std::string code) : code(code), cursor(code), nextToken(TokenType::END, "") { scanToken(); };
 	~Tokenizer() = default;
 
 	void print(Token token);
@@ -46,12 +47,14 @@ public:
 		return result;
 	}
 private:
-	void scanToken();
+	bool scanToken();
+	//void scanToken();
 	bool scanPRINT(int index);
 	int scanNUM(int index, Token& outToken);
 	int scanID(int index, Token& outToken);
 
 	Token nextToken;
 	std::string code;
-	int head;
+	std::string cursor;
+	//int head;
 };

@@ -1,8 +1,8 @@
 #pragma once
+#include "Tokenizer.h"
 #include <string>
 #include <iostream>
 #include <vector>
-#include "Tokenizer.h"
 
 class TreeNode
 {
