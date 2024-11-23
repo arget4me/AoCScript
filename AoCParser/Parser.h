@@ -3,11 +3,45 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
+
+static std::vector<uint8_t*> stack = {};
+static std::map<std::string, int> variables = {};
+
+static int pop_int() {
+	auto out = stack.back();
+	stack.pop_back();
+	int result = *reinterpret_cast<int*>(out);
+	delete out;
+	return result;
+}
+
+static std::string pop_str() {
+	auto out = stack.back();
+	stack.pop_back();
+	std::string result = *reinterpret_cast<std::string*>(out);
+	delete out;
+	return result;
+}
+
+static void push_num(int num) {
+	stack.push_back(reinterpret_cast<uint8_t*>(new int(num)));
+}
+
+static void push_str(std::string str) {
+	stack.push_back(reinterpret_cast<uint8_t*>(new std::string(str)));
+}
+
+static void pop() {
+	if (stack.size() == 0) return;
+	delete stack.back();
+}
 
 class TreeNode
 {
 public:
 	virtual void print() = 0;
+	virtual void eval() = 0;
 };
 
 class Statement : public TreeNode
@@ -17,6 +51,11 @@ public:
 	TreeNode* statement;
 	virtual void print() override {
 		statement->print(); std::cout << ";\n";
+	}
+
+	virtual void eval() override {
+		statement->eval();
+		pop();
 	}
 };
 
@@ -38,6 +77,16 @@ public:
 		left->print(); std::cout << " + "; right->print();
 		std::cout << ")";
 	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+		
+		int result = left + right;
+		push_num(result);
+	}
 };
 
 class SUBTRACT : public OPERATOR
@@ -48,6 +97,16 @@ public:
 		std::cout << "(";
 		left->print(); std::cout << " - "; right->print();
 		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left - right;
+		push_num(result);
 	}
 };
 
@@ -60,6 +119,7 @@ public:
 		left->print(); std::cout << " * "; right->print();
 		std::cout << ")";
 	}
+	virtual void eval() override { std::cout << "MULT NOT IMPLEMENTED "; }
 };
 
 class DIV : public OPERATOR
@@ -71,6 +131,7 @@ public:
 		left->print(); std::cout << " / "; right->print();
 		std::cout << ")";
 	}
+	virtual void eval() override { std::cout << "DIV NOT IMPLEMENTED "; }
 };
 
 class NEGATE : public TreeNode
@@ -83,6 +144,7 @@ public:
 		std::cout << "-"; arg->print();
 		std::cout << ")";
 	}
+	virtual void eval() override { std::cout << "NEGATE NOT IMPLEMENTED "; }
 };
 
 class ID : public TreeNode
@@ -92,6 +154,16 @@ public:
 	std::string str;
 public:
 	virtual void print() override { std::cout << str; }
+	virtual void eval() override 
+	{
+		auto found = variables.find(str);
+		if (found != variables.end()) {
+			push_num(variables[str]);
+		}
+		else {
+			// TODO Throw runtime error
+		}
+	}
 };
 
 class STRING : public TreeNode
@@ -101,6 +173,10 @@ public:
 	std::string str;
 public:
 	virtual void print() override { std::cout << str; }
+	virtual void eval() override
+	{
+		push_str(str);
+	}
 };
 
 
@@ -111,6 +187,13 @@ public:
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
+	virtual void eval() override {
+		id->eval();
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+		int result = pop_int();
+		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
+		push_num(result);
+	}
 };
 
 class LOAD : public TreeNode
@@ -120,6 +203,12 @@ public:
 	TreeNode* str;
 public:
 	virtual void print() override { std::cout << "load: "; str->print(); }
+	virtual void eval() override {
+		str->eval();
+		std::string load_file = pop_str();
+		variables["DAY"] = 1337;
+		push_num(variables["DAY"]);
+	}
 };
 
 
@@ -131,6 +220,14 @@ public:
 	TreeNode* expression;
 public:
 	virtual void print() override { id->print(); std::cout << " = "; expression->print(); }
+	virtual void eval() override
+	{
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+		expression->eval();
+		int right = pop_int();
+		variables[id_name] = right;
+		push_num(right);
+	}
 };
 
 
@@ -141,6 +238,10 @@ public:
 	int num;
 public:
 	virtual void print() override { std::cout << num; }
+	virtual void eval() override
+	{
+		push_num(num);
+	}
 };
 
 class Parser

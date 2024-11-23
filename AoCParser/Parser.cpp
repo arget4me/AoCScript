@@ -145,7 +145,8 @@ Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
 			statements.push_back(statement);
-			statement->print();
+			//statement->print();
+			statement->eval();
 		}
 	}
 	catch (const std::invalid_argument& e) {
