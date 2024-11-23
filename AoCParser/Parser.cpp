@@ -4,10 +4,10 @@
 Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
 {
 	Token t;
-	do {
-		t = tokenizer.GetNextToken();
+	while (tokenizer.GetNextToken(t) && t.type != TokenType::END)
+	{
 		tokenizer.print(t);
-	} while (t.type != TokenType::END);
+	}
 }
 
 Parser::~Parser()

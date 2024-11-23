@@ -5,13 +5,15 @@
 bool Tokenizer::scanToken()
 {
 	static const std::vector<std::pair<std::regex, TokenType>> tokenMap = {
+		std::pair<std::regex, TokenType>{std::regex(R"(^".*")")							, TokenType::STRING},
 		std::pair<std::regex, TokenType>{std::regex(R"(^simon says\b|^print\b)")			, TokenType::PRINT},
-		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")				, TokenType::PLUS},
-		std::pair<std::regex, TokenType>{std::regex(R"(^-)")				, TokenType::MINUS},
-		std::pair<std::regex, TokenType>{std::regex(R"(^=)")				, TokenType::EQUALS},
-		std::pair<std::regex, TokenType>{std::regex(R"(^;)")				, TokenType::SEMICOLON},
-		std::pair<std::regex, TokenType>{std::regex(R"(^\d+\b)")			, TokenType::INTEGER},
-		std::pair<std::regex, TokenType>{std::regex(R"(^[a-zA-Z][\w]*\b)")	, TokenType::ID},
+		std::pair<std::regex, TokenType>{std::regex(R"(^load\b)")							, TokenType::LOAD},
+		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")								, TokenType::PLUS},
+		std::pair<std::regex, TokenType>{std::regex(R"(^-)")								, TokenType::MINUS},
+		std::pair<std::regex, TokenType>{std::regex(R"(^=)")								, TokenType::EQUALS},
+		std::pair<std::regex, TokenType>{std::regex(R"(^;)")								, TokenType::SEMICOLON},
+		std::pair<std::regex, TokenType>{std::regex(R"(^\d+\b)")							, TokenType::INTEGER},
+		std::pair<std::regex, TokenType>{std::regex(R"(^[a-zA-Z][\w]*\b)")					, TokenType::ID},
 	};
 
 	if (!cursor.empty()) {
@@ -55,7 +57,7 @@ void Tokenizer::print(Token token)
 			std::cout << "-" << " ";
 			break;
 		case TokenType::ID:
-			std::cout << "\"" << token.value << "\"" << " ";
+			std::cout << token.value << " ";
 			break;
 		case TokenType::SEMICOLON:
 			std::cout << ";\n";
@@ -66,8 +68,18 @@ void Tokenizer::print(Token token)
 		case TokenType::PRINT:
 			std::cout << "print:" << " ";
 			break;
+		case TokenType::LOAD:
+			std::cout << "load:" << " ";
+			break;
+		case TokenType::STRING:
+			std::cout << "\'" << token.value.substr(1, token.value.length() - 2) << "\'" << " ";
+
+			break;
 		case TokenType::END:
 			std::cout << "\n";
 			break;
+		default:
+			std::cout << "UNKNOWN:{" << token.value << "} ";
+
 	}
 }

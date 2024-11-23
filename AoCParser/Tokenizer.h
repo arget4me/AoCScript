@@ -11,6 +11,8 @@ enum class TokenType
 	SEMICOLON,
 	EQUALS,
 	PRINT,
+	LOAD,
+	STRING,
 	END
 };
 
@@ -36,14 +38,14 @@ public:
 class Tokenizer
 {
 public:
-	Tokenizer(std::string code) : code(code), cursor(code), nextToken(TokenType::END, "") { scanToken(); };
+	Tokenizer(std::string code) : code(code), cursor(code), nextToken(TokenType::END, "") {};
 	~Tokenizer() = default;
 
 	void print(Token token);
 
-	Token GetNextToken() {
-		Token result = nextToken;
-		scanToken();
+	bool GetNextToken(Token& outToken) {
+		bool result = scanToken();
+		outToken = nextToken;
 		return result;
 	}
 private:
