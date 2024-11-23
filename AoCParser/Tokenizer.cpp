@@ -2,6 +2,11 @@
 #include <regex>
 #include <vector>
 
+void SyntaxError(std::string code)
+{
+	throw std::invalid_argument("Syntax error: invalid token { " + code + " }");
+}
+
 bool Tokenizer::scanToken()
 {
 	static const std::vector<std::pair<std::regex, TokenType>> tokenMap = {
@@ -35,7 +40,7 @@ bool Tokenizer::scanToken()
 			}
 		}
 
-		std::cout << "Syntax error: " << cursor << std::endl;
+		SyntaxError(cursor);
 		return false;
 	}
 
