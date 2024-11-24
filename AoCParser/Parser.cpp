@@ -13,8 +13,8 @@ bool Parser::ScanExpression(Token t, TreeNode** outNode)
 	TreeNode* leftTerm = nullptr;
 	if (ScanTerm(t, &leftTerm)) {
 		*outNode = leftTerm;
-		TreeNode* rightTerm = nullptr;
 
+		TreeNode* rightTerm = nullptr;
 		while (tokenizer.PeekNextToken(t) && (t.type == TokenType::PLUS || t.type == TokenType::MINUS))
 		{
 			TokenType operatorType = t.type;
@@ -41,6 +41,38 @@ bool Parser::ScanExpression(Token t, TreeNode** outNode)
 }
 
 bool Parser::ScanTerm(Token t, TreeNode** outNode)
+{
+	TreeNode* leftFactor = nullptr;
+	if (ScanFactor(t, &leftFactor)) {
+		*outNode = leftFactor;
+
+		TreeNode* rightFactor = nullptr;
+		while (tokenizer.PeekNextToken(t) && (t.type == TokenType::MULTIPLY || t.type == TokenType::DIVIDE))
+		{
+			TokenType operatorType = t.type;
+			tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
+			if (tokenizer.GetNextToken(t) && ScanFactor(t, &rightFactor)) {
+				OPERATOR* op = nullptr;
+				if (operatorType == TokenType::MULTIPLY) {
+					op = new MULT(leftFactor, rightFactor);
+				}
+				else if (operatorType == TokenType::DIVIDE) {
+					op = new DIV(leftFactor, rightFactor);
+				}
+				REGISTER_PTR(op, *outNode);
+				leftFactor = op;
+			}
+			else {
+				SyntaxError(t, "Expected term");
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Parser::ScanFactor(Token t, TreeNode** outNode)
 {
 	if (t.type == TokenType::INTEGER) {
 		REGISTER_PTR(new INTEGER(std::stoi(t.value)), *outNode);
@@ -145,7 +177,7 @@ Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
 			statements.push_back(statement);
-			//statement->print();
+			statement->print();
 			statement->eval();
 		}
 	}

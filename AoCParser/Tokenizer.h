@@ -1,12 +1,16 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <regex>
+#include <vector>
 
 enum class TokenType
 {
 	INTEGER,
 	PLUS,
 	MINUS,
+	MULTIPLY,
+	DIVIDE,
 	ID,
 	SEMICOLON,
 	EQUALS,
@@ -32,6 +36,8 @@ public:
 			case TokenType::INTEGER:			{ type_string = "INTEGER";	 }	break;
 			case TokenType::PLUS:				{ type_string = "PLUS";		 }	break;
 			case TokenType::MINUS:				{ type_string = "MINUS";	 }	break;
+			case TokenType::MULTIPLY:			{ type_string = "MULTIPLY";	 }	break;
+			case TokenType::DIVIDE:				{ type_string = "DIVIDE";	 }	break;
 			case TokenType::ID:					{ type_string = "ID";		 }	break;
 			case TokenType::SEMICOLON:			{ type_string = "SEMICOLON"; }	break;
 			case TokenType::EQUALS:				{ type_string = "EQUALS";	 }	break;
@@ -44,16 +50,6 @@ public:
 		std::string result = "{" + type_string + " : " + value + "}";
 		return result;
 	}
-};
-
-class IntegerToken : public Token
-{
-public:
-};
-
-class IDToken : public Token
-{
-public:
 };
 
 class Tokenizer
@@ -88,12 +84,10 @@ public:
 
 private:
 	bool scanToken();
-	bool scanPRINT(int index);
-	int scanNUM(int index, Token& outToken);
-	int scanID(int index, Token& outToken);
 
 	Token nextToken;
 	std::string code;
 	std::string cursor;
-	//int head;
+
+	bool checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, const std::string& line);
 };

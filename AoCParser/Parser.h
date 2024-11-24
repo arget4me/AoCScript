@@ -119,7 +119,16 @@ public:
 		left->print(); std::cout << " * "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override { std::cout << "MULT NOT IMPLEMENTED "; }
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left * right;
+		push_num(result);
+	}
 };
 
 class DIV : public OPERATOR
@@ -131,7 +140,16 @@ public:
 		left->print(); std::cout << " / "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override { std::cout << "DIV NOT IMPLEMENTED "; }
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left / right;
+		push_num(result);
+	}
 };
 
 class NEGATE : public TreeNode
@@ -257,7 +275,8 @@ class Parser
 		PrintStatement		::= "print" | "simon says" Identifier
 		LoadStatement		::= "load" String
 		Expression			::= Term { ("+" | "-") Term}
-		Term				::= Number
+		Term				::= Factor { ("*" | "/") Factor}
+		Factor				::= Number
 								| Identifier
 		Identifier			::= Letter { Letter | Digit }
 		Number				::= Digit { Digit }
@@ -274,6 +293,7 @@ public:
 private:
 	bool ScanExpression(Token t, TreeNode** outNode);
 	bool ScanTerm(Token t, TreeNode** outNode);
+	bool ScanFactor(Token t, TreeNode** outNode);
 	bool ScanAssignment(Token t, TreeNode** outNode);
 	bool ScanID(Token t, TreeNode** outNode);
 	bool ScanString(Token t, TreeNode** outNode);

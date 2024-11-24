@@ -7,14 +7,32 @@ void SyntaxError(std::string code)
 	throw std::invalid_argument("Syntax error: invalid token { " + code + " }");
 }
 
+bool Tokenizer::checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, const std::string& line)
+{
+	for (auto& pair : tokenMap) {
+		std::smatch match;
+		if (std::regex_search(line, match, pair.first)) {
+			nextToken = Token(pair.second, match.str());
+			cursor = cursor.substr(match.str().length(), cursor.length() - match.str().length());
+			return true;
+		}
+	}
+	return false;
+}
+
 bool Tokenizer::scanToken()
 {
-	static const std::vector<std::pair<std::regex, TokenType>> tokenMap = {
-		std::pair<std::regex, TokenType>{std::regex(R"(^".*")")							, TokenType::STRING},
+	static const std::vector<std::pair<std::regex, TokenType>> multilineTokenMap = {
+		std::pair<std::regex, TokenType>{std::regex(R"(^"(.|\n)*")")						, TokenType::STRING},
+	};
+
+	static const std::vector<std::pair<std::regex, TokenType>> singlelineTokenMap = {
 		std::pair<std::regex, TokenType>{std::regex(R"(^simon says\b|^print\b)")			, TokenType::PRINT},
 		std::pair<std::regex, TokenType>{std::regex(R"(^load\b)")							, TokenType::LOAD},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")								, TokenType::PLUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^-)")								, TokenType::MINUS},
+		std::pair<std::regex, TokenType>{std::regex(R"(^\*)")								, TokenType::MULTIPLY},
+		std::pair<std::regex, TokenType>{std::regex(R"(^/)")								, TokenType::DIVIDE},
 		std::pair<std::regex, TokenType>{std::regex(R"(^=)")								, TokenType::EQUALS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^;)")								, TokenType::SEMICOLON},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\d+\b)")							, TokenType::INTEGER},
@@ -25,19 +43,18 @@ bool Tokenizer::scanToken()
 		// Remove leading whitespaces
 		cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
 		auto line = cursor;
-
+				
 		size_t newLinePos;
-		if ((newLinePos = line.find('\n', 0)) != std::string::npos) { // NOTE This solution won't handle \n inside a string but that is not in the grammar
+		if ((newLinePos = line.find('\n', 0)) != std::string::npos) { 
 			line = line.substr(0, newLinePos);
 		}
+		
+		if (checkTokenMap(singlelineTokenMap, line)) {
+			return true;
+		}
 
-		for (auto& pair : tokenMap) {
-			std::smatch match;
-			if (std::regex_search(line, match, pair.first)) {
-				nextToken = Token(pair.second, match.str());
-				cursor = cursor.substr(match.str().length(), cursor.length() - match.str().length());
-				return true;
-			}
+		if (checkTokenMap(multilineTokenMap, cursor)) { // Must check these cases before the newline token is skipped
+			return true;
 		}
 
 		SyntaxError(cursor);
