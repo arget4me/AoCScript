@@ -47,7 +47,7 @@ bool Parser::ScanTerm(Token t, TreeNode** outNode)
 		*outNode = leftFactor;
 
 		TreeNode* rightFactor = nullptr;
-		while (tokenizer.PeekNextToken(t) && (t.type == TokenType::MULTIPLY || t.type == TokenType::DIVIDE))
+		while (tokenizer.PeekNextToken(t) && (t.type == TokenType::MULTIPLY || t.type == TokenType::DIVIDE || t.type == TokenType::MODULO))
 		{
 			TokenType operatorType = t.type;
 			tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
@@ -58,6 +58,10 @@ bool Parser::ScanTerm(Token t, TreeNode** outNode)
 				}
 				else if (operatorType == TokenType::DIVIDE) {
 					op = new DIV(leftFactor, rightFactor);
+				
+				}
+				else if (operatorType == TokenType::MODULO) {
+					op = new MODULO(leftFactor, rightFactor);
 				}
 				REGISTER_PTR(op, *outNode);
 				leftFactor = op;

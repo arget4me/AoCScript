@@ -1,0 +1,19 @@
+i = 0;
+a = 0;
+loop 100 times:
+	if i modulo 2:
+		a = a + 2;
+		print a;
+	else:
+		if a:
+			a = 100 modulo a;
+		else:
+			a = 5;
+		end;
+		print i;
+	end;
+	i = i + 1;
+loopstop;
+
+simon says i;
+simon says a;

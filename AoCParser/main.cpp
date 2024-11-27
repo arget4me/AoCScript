@@ -34,8 +34,9 @@ void RunExample(std::string path, bool printSyntax = false)
 
 int main(int argc, char* argv[])
 {
-	RunExample("example1.aoc", false);
+	/*RunExample("example1.aoc", false);
 	RunExample("example2.aoc", false);
-	RunExample("example3.aoc", false);
+	RunExample("example3.aoc", false);*/
+	RunExample("example4.aoc", true);
 	return 0;
 }

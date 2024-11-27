@@ -153,6 +153,27 @@ public:
 	}
 };
 
+class MODULO : public OPERATOR
+{
+public:
+	MODULO(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " MODULO "; right->print();
+		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left % right;
+		push_num(result);
+	}
+};
+
 class NEGATE : public TreeNode
 {
 public:
@@ -353,7 +374,7 @@ class Parser
 		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 		LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
 		Expression			::= Term { ("+" | "-") Term}
-		Term				::= Factor { ("*" | "/") Factor}
+		Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
 		Factor				::= Number
 								| Identifier
 		Identifier			::= Letter { Letter | Digit }

@@ -17,6 +17,7 @@ enum class TokenType
 	PRINT,
 	LOAD,
 	STRING,
+	MODULO,
 
 	// IfStatement
 	IF, // "if"
