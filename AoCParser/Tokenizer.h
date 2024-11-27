@@ -24,6 +24,11 @@ enum class TokenType
 	IF_CLOSE, // "end"
 	COLON, // ":"
 
+	// LoopStatement
+	LOOP,
+	LOOP_TIMES,
+	LOOP_STOP,
+
 	END,
 };
 

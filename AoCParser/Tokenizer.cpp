@@ -4,7 +4,7 @@
 
 void SyntaxError(std::string code)
 {
-	throw std::invalid_argument("Syntax error: invalid token { " + code + " }");
+	throw std::invalid_argument("Syntax error(tokenizer): invalid token { " + code + " }");
 }
 
 bool Tokenizer::checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, std::string& line)
@@ -32,6 +32,9 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^if\b)")								, TokenType::IF},
 		std::pair<std::regex, TokenType>{std::regex(R"(^else\b)")							, TokenType::IF_ELSE},
 		std::pair<std::regex, TokenType>{std::regex(R"(^end\b)")							, TokenType::IF_CLOSE},
+		std::pair<std::regex, TokenType>{std::regex(R"(^loop\b)")							, TokenType::LOOP},
+		std::pair<std::regex, TokenType>{std::regex(R"(^times\b)")							, TokenType::LOOP_TIMES},
+		std::pair<std::regex, TokenType>{std::regex(R"(^loopstop\b)")						, TokenType::LOOP_STOP},
 		std::pair<std::regex, TokenType>{std::regex(R"(^:)")								, TokenType::COLON},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")								, TokenType::PLUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^-)")								, TokenType::MINUS},
@@ -43,9 +46,9 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^[a-zA-Z][\w]*\b)")					, TokenType::ID},
 	};
 
+	// Remove leading whitespaces
+	cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
 	if (!cursor.empty()) {
-		// Remove leading whitespaces
-		cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
 		auto line = cursor;
 				
 		size_t newLinePos;

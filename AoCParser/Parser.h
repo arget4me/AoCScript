@@ -292,6 +292,36 @@ public:
 	}
 };
 
+class LOOP : public TreeNode
+{
+public:
+	LOOP(TreeNode* times, std::vector<TreeNode*> statements) : times(times), statements(statements) {}
+	TreeNode* times;
+	std::vector<TreeNode*> statements;
+public:
+	virtual void print() override {
+		std::cout << "LOOP "; times->print(); std::cout << " TIMES : \n";
+		for (auto statment : statements)
+		{
+			statment->print();
+		}
+		std::cout << "LOOPEND";
+
+	}
+	virtual void eval() override
+	{
+		times->eval();
+		int times_value = pop_int();
+		for (int i = 0; i < times_value; ++i)
+		{
+			for (auto statment : statements)
+			{
+				statment->eval();
+			}
+		}
+	}
+};
+
 
 class INTEGER : public TreeNode
 {
@@ -316,10 +346,12 @@ class Parser
 								| PrintStatement ";"
 								| LoadStatement ";"
 								| IfStatement ";"
+								| LoopStatement ";"
 		Assignment			::= Identifier "=" Expression
 		PrintStatement		::= "print" | "simon says" Identifier
 		LoadStatement		::= "load" String
 		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
+		LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
 		Expression			::= Term { ("+" | "-") Term}
 		Term				::= Factor { ("*" | "/") Factor}
 		Factor				::= Number
@@ -332,7 +364,7 @@ class Parser
    ======================================================================================================= */
 
 public:
-	Parser(std::string code);
+	Parser(std::string code, bool printSyntax);
 	~Parser();
 	TreeNode* getAST() { return ast; };
 
@@ -346,6 +378,7 @@ private:
 	bool ScanPrint(Token t, TreeNode** outNode);
 	bool ScanLoad(Token t, TreeNode** outNode);
 	bool ScanIf(Token t, TreeNode** outNode);
+	bool ScanLoop(Token t, TreeNode** outNode);
 	bool ScanStatement(Token t, TreeNode** outNode, bool programStatement = true);
 
 	Tokenizer tokenizer;

@@ -196,7 +196,46 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 			return true;
 		}
 		else {
-			SyntaxError(t, "Expected string");
+			SyntaxError(t, "Expected expression");
+		}
+	}
+	return false;
+}
+
+
+bool Parser::ScanLoop(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::LOOP) {
+		TreeNode* times;
+		if (tokenizer.GetNextToken(t) && ScanExpression(t, &times)) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_TIMES)) {
+				SyntaxError(t, "Expected 'times'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(t, "Expected colon ':'");
+				return false;
+			}
+
+			std::vector<TreeNode*> statements;
+			{
+				TreeNode* statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					statements.push_back(statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::LOOP_STOP) {
+				SyntaxError(t, "Expected 'loopstop'");
+				return false;
+			}
+
+			REGISTER_PTR(new LOOP(times, statements), *outNode);
+			return true;
+		}
+		else {
+			SyntaxError(t, "Expected expression");
 		}
 	}
 	return false;
@@ -205,7 +244,7 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 {
 	TreeNode* statement = nullptr;
-	if (ScanAssignment(t, &statement) || ScanPrint(t, &statement) || ScanLoad(t, &statement) || ScanIf(t, &statement)) {
+	if (ScanAssignment(t, &statement) || ScanPrint(t, &statement) || ScanLoad(t, &statement) || ScanIf(t, &statement) || ScanLoop(t, &statement)) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
 			if (programStatement) {
 				*outNode = new Statement(statement);
@@ -225,7 +264,7 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 
 
 
-Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
+Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullptr)
 {
 	Token t;
 	TreeNode* statement;
@@ -233,7 +272,7 @@ Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
 			statements.push_back(statement);
-			//statement->print();
+			if (printSyntax) { std::cout << "\t\t"; statement->print(); }
 			statement->eval();
 		}
 	}

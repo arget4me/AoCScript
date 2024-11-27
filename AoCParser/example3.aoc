@@ -1,0 +1,25 @@
+load "Day 0";
+
+a = 1 + 2 - 2 + 45;
+c2a = 3*12 - a*2;
+
+i = 5;
+flipflop = 1;
+loop i times:
+	if flipflop :
+		flipflop = 0;
+		g = 3;
+		c2a = c2a + g + i;
+		print g;
+	else:
+		flipflop = 1;
+		fg = 13;
+		c2a = 5 + fg + c2a - i;
+		print fg;
+	end;
+	i = i - 1;
+loopstop;
+
+a = 4*a + c2a + 12 - a/3*5 +1;
+print a;
+simon says c2a;
