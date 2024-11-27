@@ -35,6 +35,7 @@ static void push_str(std::string str) {
 static void pop() {
 	if (stack.size() == 0) return;
 	delete stack.back();
+	stack.pop_back();
 }
 
 class TreeNode
@@ -248,6 +249,49 @@ public:
 	}
 };
 
+class IF : public TreeNode
+{
+public:
+	IF(TreeNode* condition, std::vector<TreeNode*> statements, std::vector<TreeNode*> else_statements) : condition(condition), statements(statements), else_statements(else_statements) {}
+	TreeNode* condition;
+	std::vector<TreeNode*> statements;
+	std::vector<TreeNode*> else_statements;
+public:
+	virtual void print() override {
+		std::cout << "IF "; condition->print(); std::cout << " : \n";
+		for (auto statment : statements)
+		{
+			statment->print();
+		}
+		std::cout << "ELSE : ";
+		for (auto else_statment : else_statements)
+		{
+			else_statment->print();
+		}
+		std::cout << "END";
+
+	}
+	virtual void eval() override
+	{
+		condition->eval();
+		int condition_value = pop_int();
+		if (condition_value != 0)
+		{
+			for (auto statment : statements)
+			{
+				statment->eval();
+			}
+		}
+		else
+		{
+			for (auto else_statment : else_statements)
+			{
+				else_statment->eval();
+			}
+		}
+	}
+};
+
 
 class INTEGER : public TreeNode
 {
@@ -271,9 +315,11 @@ class Parser
 		Statement			::= Assignment ";"
 								| PrintStatement ";"
 								| LoadStatement ";"
+								| IfStatement ";"
 		Assignment			::= Identifier "=" Expression
 		PrintStatement		::= "print" | "simon says" Identifier
 		LoadStatement		::= "load" String
+		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 		Expression			::= Term { ("+" | "-") Term}
 		Term				::= Factor { ("*" | "/") Factor}
 		Factor				::= Number
@@ -299,7 +345,8 @@ private:
 	bool ScanString(Token t, TreeNode** outNode);
 	bool ScanPrint(Token t, TreeNode** outNode);
 	bool ScanLoad(Token t, TreeNode** outNode);
-	bool ScanStatement(Token t, TreeNode** outNode);
+	bool ScanIf(Token t, TreeNode** outNode);
+	bool ScanStatement(Token t, TreeNode** outNode, bool programStatement = true);
 
 	Tokenizer tokenizer;
 	TreeNode* ast;

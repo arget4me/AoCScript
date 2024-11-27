@@ -17,7 +17,14 @@ enum class TokenType
 	PRINT,
 	LOAD,
 	STRING,
-	END
+
+	// IfStatement
+	IF, // "if"
+	IF_ELSE, // "else"
+	IF_CLOSE, // "end"
+	COLON, // ":"
+
+	END,
 };
 
 class Token
@@ -44,6 +51,13 @@ public:
 			case TokenType::PRINT:				{ type_string = "PRINT";	 }	break;
 			case TokenType::LOAD:				{ type_string = "LOAD";		 }	break;
 			case TokenType::STRING:				{ type_string = "STRING";	 }	break;
+			
+			// IfStatement
+			case TokenType::IF:				{ type_string = "IF";	 }	break;
+			case TokenType::IF_ELSE:				{ type_string = "IF_ELSE";	 }	break;
+			case TokenType::IF_CLOSE:				{ type_string = "IF_CLOSE";	 }	break;
+			case TokenType::COLON:				{ type_string = "COLON";	 }	break;
+
 			case TokenType::END:				{ type_string = "END";		 }	break;
 			default: break;
 		}
@@ -89,5 +103,5 @@ private:
 	std::string code;
 	std::string cursor;
 
-	bool checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, const std::string& line);
+	bool checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, std::string& line);
 };

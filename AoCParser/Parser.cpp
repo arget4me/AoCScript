@@ -151,12 +151,68 @@ bool Parser::ScanLoad(Token t, TreeNode** outNode)
 	return false;
 }
 
-bool Parser::ScanStatement(Token t, TreeNode** outNode)
+bool Parser::ScanIf(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::IF) {
+		TreeNode* condition;
+		if (tokenizer.GetNextToken(t) && ScanExpression(t, &condition)) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(t, "Expected colon ':'");
+				return false;
+			}
+			
+			std::vector<TreeNode*> statements;
+			{
+				TreeNode* statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					statements.push_back(statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::IF_ELSE) {
+				SyntaxError(t, "Expected 'else'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(t, "Expected colon ':'");
+				return false;
+			}
+
+			std::vector<TreeNode*> else_statements;
+			{
+				TreeNode* else_statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &else_statement, false)) {
+					else_statements.push_back(else_statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::IF_CLOSE) {
+				SyntaxError(t, "Expected 'end'");
+				return false;
+			}
+
+			REGISTER_PTR(new IF(condition, statements, else_statements), *outNode);
+			return true;
+		}
+		else {
+			SyntaxError(t, "Expected string");
+		}
+	}
+	return false;
+}
+
+bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 {
 	TreeNode* statement = nullptr;
-	if (ScanAssignment(t, &statement) || ScanPrint(t, &statement) || ScanLoad(t, &statement)) {
+	if (ScanAssignment(t, &statement) || ScanPrint(t, &statement) || ScanLoad(t, &statement) || ScanIf(t, &statement)) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
-			*outNode = new Statement(statement);
+			if (programStatement) {
+				*outNode = new Statement(statement);
+			}
+			else {
+				REGISTER_PTR(new Statement(statement), *outNode);
+			}
 			return true;
 		}
 		else {
@@ -177,7 +233,7 @@ Parser::Parser(std::string code) : tokenizer(code), ast(nullptr)
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
 			statements.push_back(statement);
-			statement->print();
+			//statement->print();
 			statement->eval();
 		}
 	}

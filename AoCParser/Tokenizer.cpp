@@ -7,7 +7,7 @@ void SyntaxError(std::string code)
 	throw std::invalid_argument("Syntax error: invalid token { " + code + " }");
 }
 
-bool Tokenizer::checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, const std::string& line)
+bool Tokenizer::checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, std::string& line)
 {
 	for (auto& pair : tokenMap) {
 		std::smatch match;
@@ -23,12 +23,16 @@ bool Tokenizer::checkTokenMap(const std::vector<std::pair<std::regex, TokenType>
 bool Tokenizer::scanToken()
 {
 	static const std::vector<std::pair<std::regex, TokenType>> multilineTokenMap = {
-		std::pair<std::regex, TokenType>{std::regex(R"(^"(.|\n)*")")						, TokenType::STRING},
 	};
 
 	static const std::vector<std::pair<std::regex, TokenType>> singlelineTokenMap = {
+		std::pair<std::regex, TokenType>{std::regex(R"(^".*")")								, TokenType::STRING},
 		std::pair<std::regex, TokenType>{std::regex(R"(^simon says\b|^print\b)")			, TokenType::PRINT},
 		std::pair<std::regex, TokenType>{std::regex(R"(^load\b)")							, TokenType::LOAD},
+		std::pair<std::regex, TokenType>{std::regex(R"(^if\b)")								, TokenType::IF},
+		std::pair<std::regex, TokenType>{std::regex(R"(^else\b)")							, TokenType::IF_ELSE},
+		std::pair<std::regex, TokenType>{std::regex(R"(^end\b)")							, TokenType::IF_CLOSE},
+		std::pair<std::regex, TokenType>{std::regex(R"(^:)")								, TokenType::COLON},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\+)")								, TokenType::PLUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^-)")								, TokenType::MINUS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^\*)")								, TokenType::MULTIPLY},
