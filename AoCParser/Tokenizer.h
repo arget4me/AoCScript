@@ -19,6 +19,13 @@ enum class TokenType
 	STRING,
 	MODULO,
 
+	// Logic Operators
+	GREATER_THAN,
+	GREATER_EQUALS,
+	LESS_THAN,
+	LESS_EQUALS,
+	IS_EQUAL,
+
 	// IfStatement
 	IF, // "if"
 	IF_ELSE, // "else"

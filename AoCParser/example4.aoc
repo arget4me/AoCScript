@@ -5,15 +5,55 @@ loop 100 times:
 		a = a + 2;
 		print a;
 	else:
-		if a:
+		if a > 0:
 			a = 100 modulo a;
 		else:
 			a = 5;
+			gg = a;
+			print gg;
 		end;
 		print i;
 	end;
+
+	if i==2:
+		t = 4;
+		print t;
+	else:
+	end;
+
+	if i<= 1:
+		tva = i;
+		print tva;
+	else:
+	end;
+
+	if i< 1:
+		enn = i;
+		print enn;
+	else:
+	end;
+
+	
+	if i> 96:
+		ennn = i;
+		print ennn;
+	else:
+	end;
+
+	if i>=96:
+		en = i;
+		print en;
+	else:
+	end;
+
 	i = i + 1;
 loopstop;
+
+if 1 + 3 * 2 - 2 < 0 + 2 * 100:
+	print a;
+else:
+	print i;
+end;
 
 simon says i;
 simon says a;

@@ -10,6 +10,53 @@ void SyntaxError(Token token, std::string expected)
 
 bool Parser::ScanExpression(Token t, TreeNode** outNode)
 {
+	TreeNode* leftLogic = nullptr;
+	if (ScanLogic(t, &leftLogic)) {
+		*outNode = leftLogic;
+
+		TreeNode* rightLogic = nullptr;
+		while (tokenizer.PeekNextToken(t) && (
+					t.type == TokenType::GREATER_THAN
+				||	t.type == TokenType::GREATER_EQUALS
+				||	t.type == TokenType::LESS_THAN
+				||	t.type == TokenType::LESS_EQUALS
+				||	t.type == TokenType::IS_EQUAL
+		))
+		{
+			TokenType operatorType = t.type;
+			tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
+			if (tokenizer.GetNextToken(t) && ScanLogic(t, &rightLogic)) {
+				TreeNode* op = nullptr;
+				if (operatorType == TokenType::GREATER_THAN) {
+					op = new GREATER_THAN(leftLogic, rightLogic);
+				}
+				else if (operatorType == TokenType::GREATER_EQUALS) {
+					op = new GREATER_EQUALS(leftLogic, rightLogic);
+				}
+				else if (operatorType == TokenType::LESS_THAN) {
+					op = new LESS_THAN(leftLogic, rightLogic);
+				}
+				else if (operatorType == TokenType::LESS_EQUALS) {
+					op = new LESS_EQUALS(leftLogic, rightLogic);
+				}
+				else if (operatorType == TokenType::IS_EQUAL) {
+					op = new IS_EQUAL(leftLogic, rightLogic);
+				}
+				REGISTER_PTR(op, *outNode);
+				leftLogic = op;
+			}
+			else {
+				SyntaxError(t, "Expected logic operator");
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Parser::ScanLogic(Token t, TreeNode** outNode)
+{
 	TreeNode* leftTerm = nullptr;
 	if (ScanTerm(t, &leftTerm)) {
 		*outNode = leftTerm;

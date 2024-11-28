@@ -174,17 +174,109 @@ public:
 	}
 };
 
-class NEGATE : public TreeNode
+class GREATER_THAN : public OPERATOR
 {
 public:
-	TreeNode* arg;
-public:
+	GREATER_THAN(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
 	virtual void print() override {
 		std::cout << "(";
-		std::cout << "-"; arg->print();
+		left->print(); std::cout << " > "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override { std::cout << "NEGATE NOT IMPLEMENTED "; }
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left > right;
+		push_num(result);
+	}
+};
+
+class GREATER_EQUALS : public OPERATOR
+{
+public:
+	GREATER_EQUALS(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " >= "; right->print();
+		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left >= right;
+		push_num(result);
+	}
+};
+
+class LESS_THAN : public OPERATOR
+{
+public:
+	LESS_THAN(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " < "; right->print();
+		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left < right;
+		push_num(result);
+	}
+};
+
+class LESS_EQUALS : public OPERATOR
+{
+public:
+	LESS_EQUALS(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " <= "; right->print();
+		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left <= right;
+		push_num(result);
+	}
+};
+
+class IS_EQUAL : public OPERATOR
+{
+public:
+	IS_EQUAL(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " == "; right->print();
+		std::cout << ")";
+	}
+	virtual void eval() override {
+		left->eval();
+		int left = pop_int();
+
+		right->eval();
+		int right = pop_int();
+
+		int result = left == right;
+		push_num(result);
+	}
 };
 
 class ID : public TreeNode
@@ -373,7 +465,8 @@ class Parser
 		LoadStatement		::= "load" String
 		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 		LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
-		Expression			::= Term { ("+" | "-") Term}
+		Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
+		Logic				::= Term { ("+" | "-") Term}
 		Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
 		Factor				::= Number
 								| Identifier
@@ -391,6 +484,7 @@ public:
 
 private:
 	bool ScanExpression(Token t, TreeNode** outNode);
+	bool ScanLogic(Token t, TreeNode** outNode);
 	bool ScanTerm(Token t, TreeNode** outNode);
 	bool ScanFactor(Token t, TreeNode** outNode);
 	bool ScanAssignment(Token t, TreeNode** outNode);
