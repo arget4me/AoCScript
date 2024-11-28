@@ -1,29 +1,29 @@
 # AoCScript
 
 ## Grammar
-	Program				::= {Statement}
-	Statement			::= Assignment ";"
-							| PrintStatement ";"
-							| LoadStatement ";"
-							| IfStatement ";"
-							| LoopStatement ";"
-							| AssertStatement ";"
-	Assignment			::= Identifier "=" Expression
-	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String )
-	LoadStatement		::= "load" String
-	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
-	LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
-	AssertStatement		::= "assert" Expression ":" String
-	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
-	Logic				::= Term { ("+" | "-") Term}
-	Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
-	Factor				::= Number
-							| Identifier
-	Identifier			::= Letter { Letter | Digit }
-	Number				::= Digit { Digit }
-	Letter				::=	"a" | ... |"z" | "A" | ... | "Z"    // Any alphabetical character, [a-zA-Z]
-	Digit				::= "0" | ... | "9"						// Any numeric digit [0-9]
-	String				::= \".*\"
+	Program			::= {Statement}
+	Statement		::= Assignment ";"
+						| PrintStatement ";"
+						| LoadStatement ";"
+						| IfStatement ";"
+						| LoopStatement ";"
+						| AssertStatement ";"
+	Assignment		::= Identifier "=" Expression
+	PrintStatement	::= ( "print" | "simon says" ) ( Identifier | String )
+	LoadStatement	::= "load" String
+	IfStatement		::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
+	LoopStatement	::= "loop" Expression "times" ":" {Statement} "loopstop"
+	AssertStatement	::= "assert" Expression ":" String
+	Expression		::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
+	Logic			::= Term { ("+" | "-") Term}
+	Term			::= Factor { ("*" | "/" | "modulo" ) Factor}
+	Factor			::= Number
+						| Identifier
+	Identifier		::= Letter { Letter | Digit }
+	Number			::= Digit { Digit }
+	Letter			::=	"a" | ... |"z" | "A" | ... | "Z"    // Any alphabetical character, [a-zA-Z]
+	Digit			::= "0" | ... | "9"						// Any numeric digit [0-9]
+	String			::= \".*\"
 
 ## TODO
 [ ] Need loading input file<br/>
