@@ -168,11 +168,15 @@ bool Parser::ScanPrint(Token t, TreeNode** outNode)
 	if (t.type == TokenType::PRINT) {
 		TreeNode* id;
 		if (tokenizer.GetNextToken(t) && ScanID(t, &id)) {
-			REGISTER_PTR(new PRINT(id), *outNode);
+			REGISTER_PTR(new PRINT_ID(id), *outNode);
+			return true;
+		}
+		else if (ScanString(t, &id)) {
+			REGISTER_PTR(new PRINT_STR(id), *outNode);
 			return true;
 		}
 		else {
-			SyntaxError(t, "Expected identifier");
+			SyntaxError(t, "Expected identifier or string");
 		}
 	}
 	return false;
@@ -181,7 +185,8 @@ bool Parser::ScanPrint(Token t, TreeNode** outNode)
 bool Parser::ScanString(Token t, TreeNode** outNode)
 {
 	if (t.type == TokenType::STRING) {
-		REGISTER_PTR(new STRING(t.value), *outNode);
+		std::string str = t.value.substr(1, t.value.length() - 2);
+		REGISTER_PTR(new STRING(str), *outNode);
 		return true;
 	}
 	return false;

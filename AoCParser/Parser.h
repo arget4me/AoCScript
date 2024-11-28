@@ -312,10 +312,10 @@ public:
 };
 
 
-class PRINT : public TreeNode
+class PRINT_ID : public TreeNode
 {
 public:
-	PRINT(TreeNode* id) : id(id) {}
+	PRINT_ID(TreeNode* id) : id(id) {}
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
@@ -325,6 +325,20 @@ public:
 		int result = pop_int();
 		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
 		push_num(result);
+	}
+};
+
+class PRINT_STR : public TreeNode
+{
+public:
+	PRINT_STR(TreeNode* id) : id(id) {}
+	TreeNode* id;
+public:
+	virtual void print() override { std::cout << "print: "; id->print(); }
+	virtual void eval() override {
+		id->eval();
+		std::cout << "Simon Says: \'" << pop_str() << "\'\n";
+		push_num(0);
 	}
 };
 
@@ -460,8 +474,9 @@ class Parser
 								| LoadStatement ";"
 								| IfStatement ";"
 								| LoopStatement ";"
+								| AssertStatement ";"
 		Assignment			::= Identifier "=" Expression
-		PrintStatement		::= "print" | "simon says" Identifier
+		PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String )
 		LoadStatement		::= "load" String
 		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 		LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"

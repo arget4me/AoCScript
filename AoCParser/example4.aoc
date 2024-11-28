@@ -57,3 +57,13 @@ end;
 
 simon says i;
 simon says a;
+
+if i > a:
+	simon says "i is largest";
+else:
+	if i == a:
+		simon says "i and a are equal";
+	else:
+		simon says "a is largest";
+	end;
+end;
