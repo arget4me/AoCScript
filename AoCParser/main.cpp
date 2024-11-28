@@ -38,5 +38,6 @@ int main(int argc, char* argv[])
 	RunExample("example2.aoc", false);
 	RunExample("example3.aoc", false);
 	RunExample("example4.aoc", false);
+	RunExample("example5.aoc", false);
 	return 0;
 }

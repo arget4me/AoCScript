@@ -1,0 +1,16 @@
+size = 10;
+i = 0;
+loop size times:
+	simon says i;
+	if i modulo 2 == 0:
+		print "EVEN";
+	else:
+		print "ODD";
+	end;
+	i = i + 1;
+loopstop;
+
+print i;
+assert i == size : "'i' must be equal to 'size' at this point";
+
+print "SUCCESS!";

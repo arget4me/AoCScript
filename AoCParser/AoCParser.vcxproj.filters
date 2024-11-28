@@ -46,5 +46,8 @@
     <None Include="example4.aoc">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="example5.aoc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
