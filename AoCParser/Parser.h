@@ -419,6 +419,34 @@ public:
 	}
 };
 
+class ASSERT : public TreeNode
+{
+public:
+	ASSERT(TreeNode* condition, TreeNode* str) : condition(condition), str(str) {}
+	TreeNode* condition;
+	TreeNode* str;
+public:
+	virtual void print() override {
+		std::cout << "ASSERT ("; 
+		condition->print(); 
+		std::cout << ") : \'"; 
+		str->print();
+		std::cout << "\'";
+	}
+
+	virtual void eval() override
+	{
+		condition->eval();
+		int condition_value = pop_int();
+		if (condition_value == 0)
+		{
+			str->eval();
+			std::string str_value = pop_str();
+			throw std::invalid_argument("ASSERT FAILED!: " + str_value);
+		}
+	}
+};
+
 class LOOP : public TreeNode
 {
 public:
@@ -448,7 +476,6 @@ public:
 		}
 	}
 };
-
 
 class INTEGER : public TreeNode
 {
@@ -480,6 +507,7 @@ class Parser
 		LoadStatement		::= "load" String
 		IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 		LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
+		AssertStatement		::= "assert" Expression ":" String
 		Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
 		Logic				::= Term { ("+" | "-") Term}
 		Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
@@ -509,6 +537,7 @@ private:
 	bool ScanLoad(Token t, TreeNode** outNode);
 	bool ScanIf(Token t, TreeNode** outNode);
 	bool ScanLoop(Token t, TreeNode** outNode);
+	bool ScanAssert(Token t, TreeNode** outNode);
 	bool ScanStatement(Token t, TreeNode** outNode, bool programStatement = true);
 
 	Tokenizer tokenizer;

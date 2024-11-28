@@ -37,6 +37,9 @@ enum class TokenType
 	LOOP_TIMES,
 	LOOP_STOP,
 
+	// AssertStatement
+	ASSERT,
+
 	END,
 };
 
@@ -64,15 +67,31 @@ public:
 			case TokenType::PRINT:				{ type_string = "PRINT";	 }	break;
 			case TokenType::LOAD:				{ type_string = "LOAD";		 }	break;
 			case TokenType::STRING:				{ type_string = "STRING";	 }	break;
-			
+			case TokenType::MODULO:				{ type_string = "MODULO";	 }	break;
+
+			// Logic Operators
+			case TokenType::GREATER_THAN: { type_string = "GREATER_THAN";	 }	break;
+			case TokenType::GREATER_EQUALS: { type_string = "GREATER_EQUALS";	 }	break;
+			case TokenType::LESS_THAN: { type_string = "LESS_THAN";		 }	break;
+			case TokenType::LESS_EQUALS: { type_string = "LESS_EQUALS";	 }	break;
+			case TokenType::IS_EQUAL: { type_string = "IS_EQUAL";	 }	break;
+
 			// IfStatement
 			case TokenType::IF:				{ type_string = "IF";	 }	break;
 			case TokenType::IF_ELSE:				{ type_string = "IF_ELSE";	 }	break;
 			case TokenType::IF_CLOSE:				{ type_string = "IF_CLOSE";	 }	break;
 			case TokenType::COLON:				{ type_string = "COLON";	 }	break;
 
+			// LoopStatement
+			case TokenType::LOOP: { type_string = "LOOP";	 }	break;
+			case TokenType::LOOP_TIMES: { type_string = "LOOP_TIMES";	 }	break;
+			case TokenType::LOOP_STOP: { type_string = "LOOP_STOP";	 }	break;
+
+			// AssertStatement
+			case TokenType::ASSERT: { type_string = "ASSERT";	 }	break;
+
 			case TokenType::END:				{ type_string = "END";		 }	break;
-			default: break;
+			default: { type_string = "UNIMPLEMENTED: Token::ToString (" + static_cast<int>(type);		 }break;
 		}
 		std::string result = "{" + type_string + " : " + value + "}";
 		return result;

@@ -297,10 +297,42 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 	return false;
 }
 
+bool Parser::ScanAssert(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::ASSERT) {
+		TreeNode* condition;
+		if (tokenizer.GetNextToken(t) && ScanExpression(t, &condition)) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(t, "Expected colon ':'");
+				return false;
+			}
+
+			TreeNode* str;
+			if (tokenizer.GetNextToken(t) && ScanString(t, &str)) {
+				REGISTER_PTR(new ASSERT(condition, str), *outNode);
+				return true;
+			}
+			else {
+				SyntaxError(t, "Expected string");
+			}
+		}
+		else {
+			SyntaxError(t, "Expected expression");
+		}
+	}
+	return false;
+}
+
 bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 {
 	TreeNode* statement = nullptr;
-	if (ScanAssignment(t, &statement) || ScanPrint(t, &statement) || ScanLoad(t, &statement) || ScanIf(t, &statement) || ScanLoop(t, &statement)) {
+	if (ScanAssignment(t, &statement) 
+		|| ScanPrint(t, &statement) 
+		|| ScanLoad(t, &statement) 
+		|| ScanIf(t, &statement) 
+		|| ScanLoop(t, &statement)
+		|| ScanAssert(t, &statement)
+		) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
 			if (programStatement) {
 				*outNode = new Statement(statement);
