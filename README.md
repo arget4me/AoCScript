@@ -19,6 +19,7 @@
 	Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
 	Factor				::= Number
 							| Identifier
+							| "(" Expression ")"
 	Identifier			::= Letter { Letter | Digit }
 	Number				::= Digit { Digit }
 	Letter				::=	"a" | ... |"z" | "A" | ... | "Z"    // Any alphabetical character, [a-zA-Z]

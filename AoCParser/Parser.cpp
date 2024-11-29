@@ -132,6 +132,22 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 	else if (ScanID(t, outNode)) {
 		return true;
 	}
+	else if (t.type == TokenType::LPAREN)
+	{
+		if (tokenizer.GetNextToken(t) && !ScanExpression(t, outNode))
+		{
+			SyntaxError(t, "Expected expression");
+			return false;
+		}
+
+		if (tokenizer.GetNextToken(t) && t.type != TokenType::RPAREN)
+		{
+			SyntaxError(t, "Expected ')'");
+			return false;
+		}
+
+		return true;
+	}
 	//else if ( ScanExpression(t, )) //    "("   Expression    ")"
 	return false;
 }

@@ -36,6 +36,8 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^times\b)")							, TokenType::LOOP_TIMES},
 		std::pair<std::regex, TokenType>{std::regex(R"(^loopstop\b)")						, TokenType::LOOP_STOP},
 		std::pair<std::regex, TokenType>{std::regex(R"(^assert\b)")							, TokenType::ASSERT},
+		std::pair<std::regex, TokenType>{std::regex(R"(^\()")								, TokenType::LPAREN},
+		std::pair<std::regex, TokenType>{std::regex(R"(^\))")								, TokenType::RPAREN},
 		std::pair<std::regex, TokenType>{std::regex(R"(^:)")								, TokenType::COLON},
 		std::pair<std::regex, TokenType>{std::regex(R"(^modulo\b)")							, TokenType::MODULO},
 		std::pair<std::regex, TokenType>{std::regex(R"(^==)")								, TokenType::IS_EQUAL},

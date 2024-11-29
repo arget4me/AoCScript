@@ -6,41 +6,52 @@
 
 enum class TokenType
 {
+	SEMICOLON,	// ';'
+	
+	// Operators
+	PLUS,		// '+'
+	MINUS,		// '-'
+	MULTIPLY,	// '*'
+	DIVIDE,		// '/'
+	EQUALS,		// '='
+	MODULO,		// 'modulo'
+
+	// Intrinsics
+	PRINT,		// 'print' | 'simon says'
+	LOAD,		// 'load'
+
+	// Variable types
 	INTEGER,
-	PLUS,
-	MINUS,
-	MULTIPLY,
-	DIVIDE,
-	ID,
-	SEMICOLON,
-	EQUALS,
-	PRINT,
-	LOAD,
 	STRING,
-	MODULO,
+	ID,
 
 	// Logic Operators
-	GREATER_THAN,
-	GREATER_EQUALS,
-	LESS_THAN,
-	LESS_EQUALS,
-	IS_EQUAL,
+	GREATER_THAN,	// '>'
+	GREATER_EQUALS,	// '>='
+	LESS_THAN,		// '<'
+	LESS_EQUALS,	// '<='
+	IS_EQUAL,		// '=='
 
 	// IfStatement
-	IF, // "if"
-	IF_ELSE, // "else"
-	IF_CLOSE, // "end"
-	COLON, // ":"
+	IF,			// "if"
+	IF_ELSE,	// "else"
+	IF_CLOSE,	// "end"
+	COLON,		// ":"
 
 	// LoopStatement
-	LOOP,
-	LOOP_TIMES,
-	LOOP_STOP,
+	LOOP,		// 'loop'
+	LOOP_TIMES, // 'times'
+	LOOP_STOP,	// 'loopstop'
 
 	// AssertStatement
-	ASSERT,
+	ASSERT,		// 'assert'
 
-	END,
+
+	// Expressions
+	LPAREN,		// '('
+	RPAREN,		// ')'
+
+	END, // end of file stream (not really needed could be removed if wanted). Helps debugging
 };
 
 class Token
