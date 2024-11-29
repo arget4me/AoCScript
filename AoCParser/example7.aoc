@@ -1,0 +1,8 @@
+load "example7.aoc";
+
+a = 2;
+print a;
+
+print "SOME PRINT";
+
+print DAY;

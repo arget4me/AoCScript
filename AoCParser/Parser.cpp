@@ -1,7 +1,27 @@
 #include "Parser.h"
 #include <stdexcept> // For standard exception classes
 
+// For Reading entire file to string
+#include <fstream>
+#include <sstream>
+
 #define REGISTER_PTR(ptr, assign) { auto* _register_ptr = ptr; nodes.push_back(_register_ptr); assign = _register_ptr; }
+
+bool ReadFile(const std::string& filePath, std::string& fileContents) {
+	std::ifstream file(filePath);
+	if (!file.is_open()) {
+		return false;
+	}
+
+	// Read the entire file into a string
+	std::ostringstream buffer;
+	buffer << file.rdbuf();
+
+	fileContents = buffer.str();
+
+	file.close();
+	return true;
+}
 
 void SyntaxError(Token token, std::string expected)
 {
@@ -208,8 +228,12 @@ bool Parser::ScanPrint(Token t, TreeNode** outNode)
 			REGISTER_PTR(new PRINT_STR(id), *outNode);
 			return true;
 		}
+		else if (t.type == TokenType::DAY) {
+			REGISTER_PTR(new PRINT_DAY(), *outNode);
+			return true;
+		} 
 		else {
-			SyntaxError(t, "Expected identifier or string");
+			SyntaxError(t, "Expected identifier or string or DAY");
 		}
 	}
 	return false;
@@ -383,8 +407,6 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 	return false;
 }
 
-
-
 Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullptr)
 {
 	Token t;
@@ -394,8 +416,12 @@ Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullpt
 		{
 			statements.push_back(statement);
 			if (printSyntax) { std::cout << "\t\t"; statement->print(); }
-			statement->eval();
+			statement->eval(&globals);
 		}
+		if (t.type != TokenType::END) {
+			SyntaxError(t, "Expected no more statements but received more.");
+		}
+
 	}
 	catch (const std::invalid_argument& e) {
 		std::cerr << e.what() << std::endl;
@@ -408,4 +434,48 @@ Parser::~Parser()
 	{
 		delete node;
 	}
+}
+
+
+void LOAD::eval(RuntimeGlobals* globals)
+{
+	str->eval(globals);
+	globals->DayFileName = globals->pop_str();
+	ReadFile(globals->DayFileName, globals->DayString);
+	globals->push_int(0);
+}
+
+int RuntimeGlobals::pop_int()
+{
+	auto out = stack.back();
+	int result = *reinterpret_cast<int*>(out);
+	stack.pop_back();
+	delete out;
+	return result;
+}
+
+std::string RuntimeGlobals::pop_str()
+{
+	auto out = stack.back();
+	std::string result = *reinterpret_cast<std::string*>(out);
+	stack.pop_back();
+	delete out;
+	return result;
+}
+
+void RuntimeGlobals::push_int(int num)
+{
+	stack.push_back(reinterpret_cast<uint8_t*>(new int(num)));
+}
+
+void RuntimeGlobals::push_str(std::string str)
+{
+	stack.push_back(reinterpret_cast<uint8_t*>(new std::string(str)));
+}
+
+void RuntimeGlobals::pop()
+{
+	if (stack.size() == 0) return;
+	delete stack.back();
+	stack.pop_back();
 }

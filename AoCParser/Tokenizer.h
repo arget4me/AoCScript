@@ -19,6 +19,7 @@ enum class TokenType
 	// Intrinsics
 	PRINT,		// 'print' | 'simon says'
 	LOAD,		// 'load'
+	DAY,		// 'DAY'
 
 	// Variable types
 	INTEGER,
@@ -100,6 +101,9 @@ public:
 
 			// AssertStatement
 			case TokenType::ASSERT: { type_string = "ASSERT";	 }	break;
+
+			// DAY
+			case TokenType::DAY: { type_string = "DAY";	 }	break;
 
 			case TokenType::END:				{ type_string = "END";		 }	break;
 			default: { type_string = "UNIMPLEMENTED: Token::ToString (" + static_cast<int>(type);		 }break;

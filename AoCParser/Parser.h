@@ -5,44 +5,46 @@
 #include <vector>
 #include <map>
 
-static std::vector<uint8_t*> stack = {};
-static std::map<std::string, int> variables = {};
+bool ReadFile(const std::string& filePath, std::string& fileContents);
 
-static int pop_int() {
-	auto out = stack.back();
-	stack.pop_back();
-	int result = *reinterpret_cast<int*>(out);
-	delete out;
-	return result;
-}
+class RuntimeGlobals
+{
+public:
+	RuntimeGlobals() {
+		stack = {};
+		variables = {};
+		DayLines = {};
+		DayString = "";
+		DayFileName = "";
+	}
 
-static std::string pop_str() {
-	auto out = stack.back();
-	stack.pop_back();
-	std::string result = *reinterpret_cast<std::string*>(out);
-	delete out;
-	return result;
-}
+	~RuntimeGlobals() {
+		for (auto* stack_ptr : stack) {
+			delete stack_ptr;
+		}
+	}
 
-static void push_int(int num) {
-	stack.push_back(reinterpret_cast<uint8_t*>(new int(num)));
-}
+	std::vector<uint8_t*> stack;
+	std::map<std::string, int> variables;
 
-static void push_str(std::string str) {
-	stack.push_back(reinterpret_cast<uint8_t*>(new std::string(str)));
-}
+	std::vector<std::string> DayLines;
+	std::string DayString;
+	std::string DayFileName;
 
-static void pop() {
-	if (stack.size() == 0) return;
-	delete stack.back();
-	stack.pop_back();
-}
+	int pop_int();
+	std::string pop_str();
+
+	void push_int(int num);
+	void push_str(std::string str);
+
+	void pop();
+};
 
 class TreeNode
 {
 public:
 	virtual void print() = 0;
-	virtual void eval() = 0;
+	virtual void eval(RuntimeGlobals* globals) = 0;
 };
 
 class Statement : public TreeNode
@@ -54,9 +56,9 @@ public:
 		statement->print(); std::cout << ";\n";
 	}
 
-	virtual void eval() override {
-		statement->eval();
-		pop();
+	virtual void eval(RuntimeGlobals* globals) override {
+		statement->eval(globals);
+		globals->pop();
 	}
 };
 
@@ -78,15 +80,15 @@ public:
 		left->print(); std::cout << " + "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 		
 		int result = left + right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -99,15 +101,15 @@ public:
 		left->print(); std::cout << " - "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left - right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -120,15 +122,15 @@ public:
 		left->print(); std::cout << " * "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left * right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -141,15 +143,15 @@ public:
 		left->print(); std::cout << " / "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left / right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -162,15 +164,15 @@ public:
 		left->print(); std::cout << " MODULO "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left % right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -183,15 +185,15 @@ public:
 		left->print(); std::cout << " > "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left > right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -204,15 +206,15 @@ public:
 		left->print(); std::cout << " >= "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left >= right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -225,15 +227,15 @@ public:
 		left->print(); std::cout << " < "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left < right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -246,15 +248,15 @@ public:
 		left->print(); std::cout << " <= "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left <= right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -267,15 +269,15 @@ public:
 		left->print(); std::cout << " == "; right->print();
 		std::cout << ")";
 	}
-	virtual void eval() override {
-		left->eval();
-		int left = pop_int();
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		int left = globals->pop_int();
 
-		right->eval();
-		int right = pop_int();
+		right->eval(globals);
+		int right = globals->pop_int();
 
 		int result = left == right;
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -291,10 +293,10 @@ public:
 		std::cout << ")";
 	}
 
-	virtual void eval() override { 
-		arg->eval();
-		int arg_value = pop_int();
-		push_int(-arg_value);
+	virtual void eval(RuntimeGlobals* globals) override { 
+		arg->eval(globals);
+		int arg_value = globals->pop_int();
+		globals->push_int(-arg_value);
 	}
 };
 
@@ -305,11 +307,11 @@ public:
 	std::string str;
 public:
 	virtual void print() override { std::cout << str; }
-	virtual void eval() override 
+	virtual void eval(RuntimeGlobals* globals) override 
 	{
-		auto found = variables.find(str);
-		if (found != variables.end()) {
-			push_int(variables[str]);
+		auto found = globals->variables.find(str);
+		if (found != globals->variables.end()) {
+			globals->push_int(globals->variables[str]);
 		}
 		else {
 			// TODO Throw runtime error
@@ -324,9 +326,9 @@ public:
 	std::string str;
 public:
 	virtual void print() override { std::cout << str; }
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
-		push_str(str);
+		globals->push_str(str);
 	}
 };
 
@@ -338,12 +340,12 @@ public:
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
-	virtual void eval() override {
-		id->eval();
+	virtual void eval(RuntimeGlobals* globals) override {
+		id->eval(globals);
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
-		int result = pop_int();
+		int result = globals->pop_int();
 		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
-		push_int(result);
+		globals->push_int(result);
 	}
 };
 
@@ -354,10 +356,24 @@ public:
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
-	virtual void eval() override {
-		id->eval();
-		std::cout << "Simon Says: \'" << pop_str() << "\'\n";
-		push_int(0);
+	virtual void eval(RuntimeGlobals* globals) override {
+		id->eval(globals);
+		std::string str = globals->pop_str();
+		std::cout << "Simon Says: \'" << str << "\'\n";
+		globals->push_int(0);
+	}
+};
+
+class PRINT_DAY : public TreeNode
+{
+public:
+	PRINT_DAY() {}
+public:
+	virtual void print() override { std::cout << "print: DAY"; }
+	virtual void eval(RuntimeGlobals* globals) override {
+		std::cout << "Simon Says: \"Todays input is:\"\n";
+		std::cout << globals->DayString << std::endl;
+		globals->push_int(0);
 	}
 };
 
@@ -368,14 +384,8 @@ public:
 	TreeNode* str;
 public:
 	virtual void print() override { std::cout << "load: "; str->print(); }
-	virtual void eval() override {
-		str->eval();
-		std::string load_file = pop_str();
-		variables["DAY"] = 1337;
-		push_int(variables["DAY"]);
-	}
+	virtual void eval(RuntimeGlobals* globals) override;
 };
-
 
 class EQUALS : public TreeNode
 {
@@ -385,13 +395,13 @@ public:
 	TreeNode* expression;
 public:
 	virtual void print() override { id->print(); std::cout << " = "; expression->print(); }
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
-		expression->eval();
-		int right = pop_int();
-		variables[id_name] = right;
-		push_int(right);
+		expression->eval(globals);
+		int right = globals->pop_int();
+		globals->variables[id_name] = right;
+		globals->push_int(right);
 	}
 };
 
@@ -417,22 +427,22 @@ public:
 		std::cout << "END";
 
 	}
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
-		condition->eval();
-		int condition_value = pop_int();
+		condition->eval(globals);
+		int condition_value = globals->pop_int();
 		if (condition_value != 0)
 		{
 			for (auto statment : statements)
 			{
-				statment->eval();
+				statment->eval(globals);
 			}
 		}
 		else
 		{
 			for (auto else_statment : else_statements)
 			{
-				else_statment->eval();
+				else_statment->eval(globals);
 			}
 		}
 	}
@@ -453,14 +463,14 @@ public:
 		std::cout << "\'";
 	}
 
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
-		condition->eval();
-		int condition_value = pop_int();
+		condition->eval(globals);
+		int condition_value = globals->pop_int();
 		if (condition_value == 0)
 		{
-			str->eval();
-			std::string str_value = pop_str();
+			str->eval(globals);
+			std::string str_value = globals->pop_str();
 			throw std::invalid_argument("ASSERT FAILED!: " + str_value);
 		}
 	}
@@ -482,15 +492,15 @@ public:
 		std::cout << "LOOPEND";
 
 	}
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
-		times->eval();
-		int times_value = pop_int();
+		times->eval(globals);
+		int times_value = globals->pop_int();
 		for (int i = 0; i < times_value; ++i)
 		{
 			for (auto statment : statements)
 			{
-				statment->eval();
+				statment->eval(globals);
 			}
 		}
 	}
@@ -503,9 +513,9 @@ public:
 	int num;
 public:
 	virtual void print() override { std::cout << num; }
-	virtual void eval() override
+	virtual void eval(RuntimeGlobals* globals) override
 	{
-		push_int(num);
+		globals->push_int(num);
 	}
 };
 
@@ -516,7 +526,6 @@ public:
 	Parser(std::string code, bool printSyntax);
 	~Parser();
 	TreeNode* getAST() { return ast; };
-
 private:
 	bool ScanExpression(Token t, TreeNode** outNode);
 	bool ScanLogic(Token t, TreeNode** outNode);
@@ -533,6 +542,7 @@ private:
 	bool ScanAssert(Token t, TreeNode** outNode);
 	bool ScanStatement(Token t, TreeNode** outNode, bool programStatement = true);
 
+	RuntimeGlobals globals;
 	Tokenizer tokenizer;
 	TreeNode* ast;
 	std::vector<TreeNode*> nodes;

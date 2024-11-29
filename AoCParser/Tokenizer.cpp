@@ -28,6 +28,7 @@ bool Tokenizer::scanToken()
 	static const std::vector<std::pair<std::regex, TokenType>> singlelineTokenMap = {
 		std::pair<std::regex, TokenType>{std::regex(R"(^".*")")								, TokenType::STRING},
 		std::pair<std::regex, TokenType>{std::regex(R"(^simon says\b|^print\b)")			, TokenType::PRINT},
+		std::pair<std::regex, TokenType>{std::regex(R"(^DAY\b)")							, TokenType::DAY},
 		std::pair<std::regex, TokenType>{std::regex(R"(^load\b)")							, TokenType::LOAD},
 		std::pair<std::regex, TokenType>{std::regex(R"(^if\b)")								, TokenType::IF},
 		std::pair<std::regex, TokenType>{std::regex(R"(^else\b)")							, TokenType::IF_ELSE},

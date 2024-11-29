@@ -52,5 +52,9 @@
     <None Include="example6.aoc">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="example7.aoc">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

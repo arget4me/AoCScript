@@ -9,7 +9,7 @@
 							| LoopStatement ";"
 							| AssertStatement ";"
 	Assignment			::= Identifier "=" Expression
-	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String )
+	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String
 	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 	LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
@@ -20,6 +20,8 @@
 	Factor				::= Number
 							| Identifier
 							| "(" Expression ")"
+							| Negate
+	Negate				::= "-" Factor
 	Identifier			::= Letter { Letter | Digit }
 	Number				::= Digit { Digit }
 	Letter				::=	"a" | ... |"z" | "A" | ... | "Z"    // Any alphabetical character, [a-zA-Z]
