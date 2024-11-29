@@ -12,10 +12,23 @@ assert a == 11 : "11: Math is wrong";
 
 a = 10 + 2 - (5 +3+1+6);
 print a;
-assert a == (0-3) : "-3: Math is wrong";
+assert a == (0-3) : "(0-3): Math is wrong";
 
 a = 5 - (5 - (0 - (4 +3 - 2)) +3+1+6);
 print a;
-assert a == (0-15) : "-15: Math is wrong";
+assert a == (0-15) : "(0-15): Math is wrong";
+
+a = 10 + 2 - (5 +3+1+6);
+print a;
+assert a == -3 : "-3: Math is wrong";
+
+a = 5 - (5 - (-(4 +3 - 2)) +3+1+6);
+print a;
+assert a == -15 : "-15: Math is wrong";
+
+a = 5 - (5 - (-(4 +3 - 2)) +3+1+6);
+a = -a;
+print a;
+assert a == 15 : "15: Math is wrong";
 
 print "Parentases working!";

@@ -24,7 +24,7 @@ static std::string pop_str() {
 	return result;
 }
 
-static void push_num(int num) {
+static void push_int(int num) {
 	stack.push_back(reinterpret_cast<uint8_t*>(new int(num)));
 }
 
@@ -86,7 +86,7 @@ public:
 		int right = pop_int();
 		
 		int result = left + right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -107,7 +107,7 @@ public:
 		int right = pop_int();
 
 		int result = left - right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -128,7 +128,7 @@ public:
 		int right = pop_int();
 
 		int result = left * right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -149,7 +149,7 @@ public:
 		int right = pop_int();
 
 		int result = left / right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -170,7 +170,7 @@ public:
 		int right = pop_int();
 
 		int result = left % right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -191,7 +191,7 @@ public:
 		int right = pop_int();
 
 		int result = left > right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -212,7 +212,7 @@ public:
 		int right = pop_int();
 
 		int result = left >= right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -233,7 +233,7 @@ public:
 		int right = pop_int();
 
 		int result = left < right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -254,7 +254,7 @@ public:
 		int right = pop_int();
 
 		int result = left <= right;
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -275,7 +275,26 @@ public:
 		int right = pop_int();
 
 		int result = left == right;
-		push_num(result);
+		push_int(result);
+	}
+};
+
+class NEGATE : public TreeNode
+{
+public:
+	NEGATE(TreeNode* arg) :arg(arg) {}
+	TreeNode* arg;
+
+	virtual void print() override {
+		std::cout << "(";
+		std::cout << "-"; arg->print();
+		std::cout << ")";
+	}
+
+	virtual void eval() override { 
+		arg->eval();
+		int arg_value = pop_int();
+		push_int(-arg_value);
 	}
 };
 
@@ -290,7 +309,7 @@ public:
 	{
 		auto found = variables.find(str);
 		if (found != variables.end()) {
-			push_num(variables[str]);
+			push_int(variables[str]);
 		}
 		else {
 			// TODO Throw runtime error
@@ -324,7 +343,7 @@ public:
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
 		int result = pop_int();
 		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
-		push_num(result);
+		push_int(result);
 	}
 };
 
@@ -338,7 +357,7 @@ public:
 	virtual void eval() override {
 		id->eval();
 		std::cout << "Simon Says: \'" << pop_str() << "\'\n";
-		push_num(0);
+		push_int(0);
 	}
 };
 
@@ -353,7 +372,7 @@ public:
 		str->eval();
 		std::string load_file = pop_str();
 		variables["DAY"] = 1337;
-		push_num(variables["DAY"]);
+		push_int(variables["DAY"]);
 	}
 };
 
@@ -372,7 +391,7 @@ public:
 		expression->eval();
 		int right = pop_int();
 		variables[id_name] = right;
-		push_num(right);
+		push_int(right);
 	}
 };
 
@@ -486,7 +505,7 @@ public:
 	virtual void print() override { std::cout << num; }
 	virtual void eval() override
 	{
-		push_num(num);
+		push_int(num);
 	}
 };
 
@@ -503,6 +522,7 @@ private:
 	bool ScanLogic(Token t, TreeNode** outNode);
 	bool ScanTerm(Token t, TreeNode** outNode);
 	bool ScanFactor(Token t, TreeNode** outNode);
+	bool ScanNegate(Token t, TreeNode** outNode);
 	bool ScanAssignment(Token t, TreeNode** outNode);
 	bool ScanID(Token t, TreeNode** outNode);
 	bool ScanString(Token t, TreeNode** outNode);

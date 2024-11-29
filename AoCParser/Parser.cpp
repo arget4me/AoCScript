@@ -148,7 +148,24 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 
 		return true;
 	}
-	//else if ( ScanExpression(t, )) //    "("   Expression    ")"
+	else if (ScanNegate(t, outNode)) {
+		return true;
+	}
+	return false;
+}
+
+bool Parser::ScanNegate(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::MINUS)
+	{
+		TreeNode* negateFactor = nullptr;
+		if (tokenizer.GetNextToken(t) && ScanFactor(t, &negateFactor))
+		{
+			REGISTER_PTR(new NEGATE(negateFactor), *outNode);
+			return true;
+		}
+		SyntaxError(t, "Expected factor");
+	}
 	return false;
 }
 
