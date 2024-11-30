@@ -8,11 +8,12 @@
 							| IfStatement ";"
 							| LoopStatement ";"
 							| AssertStatement ";"
-	Assignment			::= Identifier "=" Expression
+	Assignment			::= Identifier "=" ( Expression | "LINE" )
 	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String
 	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
-	LoopStatement		::= "loop" Expression "times" ":" {Statement} "loopstop"
+	LoopStatement		::= "loop" ( Expression "times" | Iterator ) ":" {Statement} "loopstop"
+	Iterator			::= "DAY" "." "lines" | "LINE" "." chars
 	AssertStatement		::= "assert" Expression ":" String
 	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
 	Logic				::= Term { ("+" | "-") Term}
