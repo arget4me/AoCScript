@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 
 enum class CONSOLE_COLOR {
 	WHITE,
@@ -12,5 +12,7 @@ enum class CONSOLE_COLOR {
 	RESET,
 };
 
+std::string ConsoleColorToString(CONSOLE_COLOR color);
 void PushConsoleColor(CONSOLE_COLOR color);
 void PopConsoleColor();
+void ResetConsoleColor();

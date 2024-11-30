@@ -362,38 +362,36 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
 		std::string str = globals->pop_str();
-		std::cout << "Simon Says: ";
-		if (str.find("SUCCESS") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::GREEN);
-		}
-		else if (str.find("FAILED") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::RED);
-		}
-		else if (str.find("GREEN") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::GREEN);
-		}
-		else if (str.find("RED") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::RED);
-		}
-		else if (str.find("BLUE") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::BLUE);
-		}
-		else if (str.find("MAGENTA") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::MAGENTA);
-		}
-		else if (str.find("CYAN") != std::string::npos) {
-			PushConsoleColor(CONSOLE_COLOR::CYAN);
-		}
-		else {
-			PushConsoleColor(CONSOLE_COLOR::WHITE);
-		}
-
-		std::cout << "\'" << str << "\'\n";
-		PopConsoleColor();
-
-
-
+		replaceColor(str, "FAILED", CONSOLE_COLOR::RED);
+		replaceColor(str, "SUCCESS", CONSOLE_COLOR::GREEN);
+		replaceColor(str, "RED", CONSOLE_COLOR::RED);
+		replaceColor(str, "YELLOW", CONSOLE_COLOR::YELLOW);
+		replaceColor(str, "GREEN", CONSOLE_COLOR::GREEN);
+		replaceColor(str, "BLUE", CONSOLE_COLOR::BLUE);
+		replaceColor(str, "MAGENTA", CONSOLE_COLOR::MAGENTA);
+		replaceColor(str, "CYAN", CONSOLE_COLOR::CYAN);
+		replaceColor(str, "WHITE", CONSOLE_COLOR::WHITE);
+		
+		std::cout << "Simon Says: \'" << str;
+		ResetConsoleColor();
+		std::cout << "\'\n";
+		
 		globals->push_int(0);
+	}
+
+private:
+	void replaceColor(std::string& str, std::string color, CONSOLE_COLOR consoleColor) {
+		if (str.find(color) != std::string::npos) {
+			replaceAll(str, color, ConsoleColorToString(consoleColor) + color);
+		}
+	}
+
+	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Move past the replacement to avoid infinite loop
+		}
 	}
 };
 

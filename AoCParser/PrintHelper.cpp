@@ -4,12 +4,15 @@
 #include <iostream>
 
 static std::vector<CONSOLE_COLOR> ColorStack = {};
-static std::string ToString(CONSOLE_COLOR color) {
+
+std::string ConsoleColorToString(CONSOLE_COLOR color) {
 	const std::string WHITE = "\033[37m";
 	const std::string RED = "\033[91m";
 	const std::string GREEN = "\033[92m";
 	const std::string YELLOW = "\033[93m";
-	const std::string BLUE = "\033[94m";
+
+	// Custom light blue using RGB (e.g., R=50, G=80, B=255) since "\033[94m" is very dark and unreadable
+	const std::string BLUE = "\033[38;2;50;80;255m";
 	const std::string MAGENTA = "\033[95m";
 	const std::string CYAN = "\033[96m";
 	const std::string RESET = "\033[0m";
@@ -45,7 +48,7 @@ static std::string ToString(CONSOLE_COLOR color) {
 
 void PushConsoleColor(CONSOLE_COLOR color) {
 	ColorStack.push_back(color);
-	std::cout << ToString(color);
+	std::cout << ConsoleColorToString(color);
 }
 
 void PopConsoleColor() {
@@ -56,5 +59,9 @@ void PopConsoleColor() {
 			color = ColorStack.back();
 		}
 	}
-	std::cout << ToString(color);
+	std::cout << ConsoleColorToString(color);
+}
+
+void ResetConsoleColor() {
+	std::cout << ConsoleColorToString(CONSOLE_COLOR::RESET);
 }
