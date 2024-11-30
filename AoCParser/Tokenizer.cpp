@@ -56,8 +56,23 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^[a-zA-Z][\w]*\b)")					, TokenType::ID},
 	};
 
-	// Remove leading whitespaces
-	cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
+	{
+		// Remove leading whitespaces
+		cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
+
+		// Remove leading single line comments '//'
+		std::smatch match;
+		while (std::regex_search(cursor, match, std::regex(R"(//.*\n)"))) {
+			auto start = cursor.find(match.str());
+			if (start != cursor.npos) {
+				cursor = cursor.replace(start, match.str().length(), "");
+			}
+
+			// Remove leading whitespaces
+			cursor = std::regex_replace(cursor, std::regex(R"(^\s+)"), "");
+		}
+	}
+
 	if (!cursor.empty()) {
 		auto line = cursor;
 				
