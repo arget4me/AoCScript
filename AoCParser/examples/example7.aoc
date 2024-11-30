@@ -1,4 +1,4 @@
-load "example7.aoc";
+load "examples/example7.aoc";
 
 a = 2;
 print a;

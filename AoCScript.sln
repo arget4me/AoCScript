@@ -7,12 +7,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AoCParser", "AoCParser\AoCP
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Examples|x64 = Debug Examples|x64
+		Debug Examples|x86 = Debug Examples|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug Examples|x64.ActiveCfg = Debug Examples|x64
+		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug Examples|x64.Build.0 = Debug Examples|x64
+		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug Examples|x86.ActiveCfg = Debug Examples|Win32
+		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug Examples|x86.Build.0 = Debug Examples|Win32
 		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug|x64.ActiveCfg = Debug|x64
 		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug|x64.Build.0 = Debug|x64
 		{34AE5E1E-EBEC-4FB3-AB1B-88126D2C7370}.Debug|x86.ActiveCfg = Debug|Win32

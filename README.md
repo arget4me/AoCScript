@@ -41,7 +41,7 @@
 
 ## Examples
 
-Code from "example5.aoc":
+Code from "examples/example5.aoc":
 
 	size = 10;
 	i = 0;
@@ -62,7 +62,7 @@ Code from "example5.aoc":
 
 Results:
 
-	Run code : example5.aoc
+	Run code : examples/example5.aoc
 	Simon Says: i   = 0
 	Simon Says: 'EVEN'
 	Simon Says: i   = 1

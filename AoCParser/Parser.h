@@ -4,8 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "PrintHelper.h"
 
 bool ReadFile(const std::string& filePath, std::string& fileContents);
+void SyntaxError(Token token, std::string expected);
+void RuntimeError(std::string expected);
 
 class RuntimeGlobals
 {
@@ -359,7 +362,37 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
 		std::string str = globals->pop_str();
-		std::cout << "Simon Says: \'" << str << "\'\n";
+		std::cout << "Simon Says: ";
+		if (str.find("SUCCESS") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::GREEN);
+		}
+		else if (str.find("FAILED") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::RED);
+		}
+		else if (str.find("GREEN") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::GREEN);
+		}
+		else if (str.find("RED") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::RED);
+		}
+		else if (str.find("BLUE") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::BLUE);
+		}
+		else if (str.find("MAGENTA") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::MAGENTA);
+		}
+		else if (str.find("CYAN") != std::string::npos) {
+			PushConsoleColor(CONSOLE_COLOR::CYAN);
+		}
+		else {
+			PushConsoleColor(CONSOLE_COLOR::WHITE);
+		}
+
+		std::cout << "\'" << str << "\'\n";
+		PopConsoleColor();
+
+
+
 		globals->push_int(0);
 	}
 };
@@ -371,8 +404,9 @@ public:
 public:
 	virtual void print() override { std::cout << "print: DAY"; }
 	virtual void eval(RuntimeGlobals* globals) override {
-		std::cout << "Simon Says: \"Todays input is:\"\n";
-		std::cout << globals->DayString << std::endl;
+		std::cout << "Simon Says Todays input is {\n";
+		if (globals->DayString.length() == 0) { RuntimeError("Day input not loaded before access!"); }
+		std::cout << globals->DayString << "\n}" << std::endl;
 		globals->push_int(0);
 	}
 };

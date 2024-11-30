@@ -9,9 +9,11 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="examples">
+      <UniqueIdentifier>{fb0c8272-a766-4cff-8fdf-53f577b9524a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{59858e55-b7fe-4191-80cf-a87b9463ef26}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,6 +26,9 @@
     <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PrintHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h">
@@ -32,29 +37,35 @@
     <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrintHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="example3.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example1.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example2.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example4.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example5.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example6.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="example7.aoc">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\README.md" />
+    <None Include="examples\example1.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example2.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example3.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example4.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example5.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example6.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\example7.aoc">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="tests\aoc_day1_test.aoc">
+      <Filter>Tests</Filter>
+    </None>
   </ItemGroup>
 </Project>

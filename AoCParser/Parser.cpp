@@ -28,6 +28,11 @@ void SyntaxError(Token token, std::string expected)
 	throw std::invalid_argument("Syntax error: " + token.ToString() + " " + expected);
 }
 
+void RuntimeError(std::string error_message)
+{
+	throw std::invalid_argument("Runtime error: {" + error_message + "}");
+}
+
 bool Parser::ScanExpression(Token t, TreeNode** outNode)
 {
 	TreeNode* leftLogic = nullptr;
@@ -411,6 +416,7 @@ Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullpt
 {
 	Token t;
 	TreeNode* statement;
+	bool success = true;
 	try {
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
@@ -424,7 +430,11 @@ Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullpt
 
 	}
 	catch (const std::invalid_argument& e) {
+		success = false;
+		PushConsoleColor(CONSOLE_COLOR::RED);
 		std::cerr << e.what() << std::endl;
+		PopConsoleColor();
+		throw std::invalid_argument("d");
 	}
 }
 
@@ -441,7 +451,10 @@ void LOAD::eval(RuntimeGlobals* globals)
 {
 	str->eval(globals);
 	globals->DayFileName = globals->pop_str();
-	ReadFile(globals->DayFileName, globals->DayString);
+	if (!ReadFile(globals->DayFileName, globals->DayString))
+	{
+		RuntimeError("Could not load Day input from file {" + globals->DayFileName + "}");
+	}
 	globals->push_int(0);
 }
 
