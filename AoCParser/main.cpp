@@ -72,6 +72,7 @@ void RunTests() {
 
 int main(int argc, char* argv[])
 {
+	InitializePrintHelper();
 #if defined(_DEBUG)
 	if (argc >= 2) {
 		const int STR_EQUALS = 0;

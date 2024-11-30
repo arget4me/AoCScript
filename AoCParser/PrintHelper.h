@@ -16,3 +16,5 @@ std::string ConsoleColorToString(CONSOLE_COLOR color);
 void PushConsoleColor(CONSOLE_COLOR color);
 void PopConsoleColor();
 void ResetConsoleColor();
+
+void InitializePrintHelper();

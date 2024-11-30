@@ -3,7 +3,24 @@
 #include <string>
 #include <iostream>
 
+#if defined(_WIN32)
+// To enable color output in windows CMD with ANSI escape code
+#include <Windows.h>
+#endif
+
 static std::vector<CONSOLE_COLOR> ColorStack = {};
+
+void InitializePrintHelper()
+{
+#if defined(_WIN32)
+	// Enable virtual terminal processing (to support ANSI escape codes)
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD dwMode = 0;
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+#endif
+}
 
 std::string ConsoleColorToString(CONSOLE_COLOR color) {
 	const std::string WHITE = "\033[37m";
