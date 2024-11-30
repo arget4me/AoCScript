@@ -229,6 +229,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="days\2023_Day1.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

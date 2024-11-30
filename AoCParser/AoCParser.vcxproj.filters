@@ -15,6 +15,9 @@
     <Filter Include="Tests">
       <UniqueIdentifier>{59858e55-b7fe-4191-80cf-a87b9463ef26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="days">
+      <UniqueIdentifier>{9b6ddcc1-bc27-4133-b9a9-5cfdcd2aa5e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -67,5 +70,10 @@
     <None Include="tests\aoc_day1_test.aoc">
       <Filter>Tests</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="days\2023_Day1.txt">
+      <Filter>days</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -29,7 +29,7 @@
 	String				::= \".*\"
 
 ## TODO
-[ ] Need loading input file<br/>
+[x] Need loading input file<br/>
 [ ] Need string lengths<br/>
 [ ] Need string character indexing<br/>
 [ ] Need string matching operators<br/>
@@ -41,7 +41,32 @@
 
 ## Examples
 
-Code from "examples/example5.aoc":
+### Code from "examples/example7.aoc":
+
+	load "examples/example1.aoc";
+	print DAY;
+
+	a = 2;
+	print a;
+
+
+	print "SOME PRINT";
+	print "SOME FAILED PRINT";
+	print "SOME SUCCESS PRINT";
+	print "SOME RED PRINT";
+	print "SOME YELLOW PRINT";
+	print "SOME GREEN PRINT";
+	print "SOME BLUE PRINT";
+	print "SOME MAGENTA PRINT";
+	print "SOME CYAN PRINT";
+	print "SOME WHITE PRINT";
+	print "Colors are: GREEN CYAN GREEN YELLOW MAGENTA SUCCESS FAILED BLUE RED WHITE.";
+
+![Example7 Output](/screenshots/example7.aoc.png)
+
+<br/>
+
+### Code from "examples/example5.aoc":
 
 	size = 10;
 	i = 0;
