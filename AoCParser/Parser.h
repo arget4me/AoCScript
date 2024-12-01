@@ -349,6 +349,33 @@ public:
 	}
 };
 
+static std::string ColorizeString(std::string str)
+{
+	auto replaceAll = [](std::string& str, const std::string& from, const std::string& to) {
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Move past the replacement to avoid infinite loop
+		}
+	};
+
+	auto replaceColor = [replaceAll](std::string& str, std::string color, CONSOLE_COLOR consoleColor) {
+		if (str.find(color) != std::string::npos) {
+			replaceAll(str, color, ConsoleColorToString(consoleColor) + color);
+		}
+	};
+	replaceColor(str, "FAILED", CONSOLE_COLOR::RED);
+	replaceColor(str, "SUCCESS", CONSOLE_COLOR::GREEN);
+	replaceColor(str, "RED", CONSOLE_COLOR::RED);
+	replaceColor(str, "YELLOW", CONSOLE_COLOR::YELLOW);
+	replaceColor(str, "GREEN", CONSOLE_COLOR::GREEN);
+	replaceColor(str, "BLUE", CONSOLE_COLOR::BLUE);
+	replaceColor(str, "MAGENTA", CONSOLE_COLOR::MAGENTA);
+	replaceColor(str, "CYAN", CONSOLE_COLOR::CYAN);
+	replaceColor(str, "WHITE", CONSOLE_COLOR::WHITE);
+	return str;
+}
+
 class PRINT_ID : public TreeNode
 {
 public:
@@ -359,8 +386,20 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
-		int result = globals->pop_var().intValue;
-		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
+		StackVariable var = globals->pop_var();
+		std::cout << "Simon Says: " << id_name << "\t= ";
+		if (var.type == VariableType::INTEGER) {
+			std::cout << var.intValue;
+		}
+		else if (var.type == VariableType::STRING) {
+			std::cout << "\'" << ColorizeString(var.strValue);
+			ResetConsoleColor();
+			std::cout << "\'";
+		}
+		else if (var.type == VariableType::FLOAT) {
+			std::cout << var.fltValue;
+		}
+		std::cout << "\n";
 	}
 };
 
@@ -374,35 +413,13 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
 		std::string str = globals->pop_var().strValue;
-		replaceColor(str, "FAILED", CONSOLE_COLOR::RED);
-		replaceColor(str, "SUCCESS", CONSOLE_COLOR::GREEN);
-		replaceColor(str, "RED", CONSOLE_COLOR::RED);
-		replaceColor(str, "YELLOW", CONSOLE_COLOR::YELLOW);
-		replaceColor(str, "GREEN", CONSOLE_COLOR::GREEN);
-		replaceColor(str, "BLUE", CONSOLE_COLOR::BLUE);
-		replaceColor(str, "MAGENTA", CONSOLE_COLOR::MAGENTA);
-		replaceColor(str, "CYAN", CONSOLE_COLOR::CYAN);
-		replaceColor(str, "WHITE", CONSOLE_COLOR::WHITE);
-		
-		std::cout << "Simon Says: \'" << str;
+		std::cout << "Simon Says: \'" << ColorizeString(str);
 		ResetConsoleColor();
 		std::cout << "\'\n";
 	}
 
 private:
-	void replaceColor(std::string& str, std::string color, CONSOLE_COLOR consoleColor) {
-		if (str.find(color) != std::string::npos) {
-			replaceAll(str, color, ConsoleColorToString(consoleColor) + color);
-		}
-	}
-
-	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
-		size_t start_pos = 0;
-		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-			str.replace(start_pos, from.length(), to);
-			start_pos += to.length(); // Move past the replacement to avoid infinite loop
-		}
-	}
+	
 };
 
 class PRINT_DAY : public TreeNode
@@ -440,9 +457,9 @@ public:
 	{
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
 		expression->eval(globals);
-		int right = globals->pop_var().intValue;
-		globals->variables[id_name].intValue = right;
-		globals->push_var(right);
+		StackVariable var = globals->pop_var();
+		globals->variables[id_name] = var;
+		globals->push_var(var);
 	}
 };
 

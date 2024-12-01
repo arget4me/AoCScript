@@ -1,7 +1,8 @@
 load "days/2024_Day1.txt";
-print DAY;
+// print DAY;
 
 a = "123";
+print a;
 aInt = a as INTEGER;
 
 b = "1   2";
