@@ -608,6 +608,42 @@ public:
 	}
 };
 
+class LIST_ADD : public TreeNode
+{
+public:
+	LIST_ADD(TreeNode* id, TreeNode* expression)
+		: id(id), expression(expression) {}
+	TreeNode* id;
+	TreeNode* expression;
+public:
+	virtual void print() override {
+		id->print();
+		std::cout << " << ";
+		expression->print();
+	}
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+		if (globals->lists.find(id_name) == globals->lists.end())
+		{
+			RuntimeError("Could not find list '" + id_name + "'");
+		}
+
+		List* list = globals->lists[id_name];
+
+		expression->eval(globals);
+		StackVariable var = globals->pop_var();
+
+		if (var.type != list->type) 
+		{
+			RuntimeError("Can't add value of type {" + VariableTypeToString(var.type) + "} to list " 
+				+ id_name + "<" + VariableTypeToString(list->type) + ">");
+		}
+
+		list->push_var(var);
+	}
+};
+
 class IF : public TreeNode
 {
 public:
@@ -768,7 +804,6 @@ private:
 	bool ScanNegate(Token t, TreeNode** outNode);
 	bool ScanAssignment(Token t, TreeNode** outNode);
 	bool ScanListDeclaration(Token t, TreeNode** outNode);
-	bool ScanListOperators(Token t, TreeNode** outNode);
 	bool ScanID(Token t, TreeNode** outNode);
 	bool ScanString(Token t, TreeNode** outNode);
 	bool ScanPrint(Token t, TreeNode** outNode);
@@ -783,4 +818,5 @@ private:
 	TreeNode* ast;
 	std::vector<TreeNode*> nodes;
 	std::vector<TreeNode*> statements;
+	std::map<std::string, char> declaredLists;
 };

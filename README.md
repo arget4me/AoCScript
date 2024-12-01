@@ -9,10 +9,9 @@
 							| LoopStatement ";"
 							| AssertStatement ";"
 							| ListDeclaration ";"
-							| ListOperators ";"
 	ListDeclaration		::= ("sorted" | "unsorted") VariableType "list" Identifier
-	ListOperators		::= Identifier "<<" Expression
-	Assignment			::= Identifier "=" ( Expression | "LINE" | String )
+	Assignment			::= Identifier ( "=" ( Expression | "LINE" | String ) | ListAssignment )
+	ListAssignment		::= "<<" Expression
 	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String
 	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"

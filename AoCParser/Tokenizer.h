@@ -124,6 +124,12 @@ public:
 			case TokenType::TYPE_STRING: { type_string = "TYPE_STRING";	 }	break;
 			case TokenType::TYPE_FLOAT: { type_string = "TYPE_FLOAT";	 }	break;
 
+			// LIST
+			case TokenType::LIST: { type_string = "LIST";	 }	break;
+			case TokenType::LIST_ADD: { type_string = "LIST_ADD";	 }	break;
+			case TokenType::LIST_SORTED: { type_string = "LIST_SORTED";	 }	break;
+			case TokenType::LIST_UNSORTED: { type_string = "LIST_UNSORTED";	 }	break;
+
 			case TokenType::END:				{ type_string = "END";		 }	break;
 			default: { type_string = "UNIMPLEMENTED: Token::ToString (" + std::to_string(static_cast<int>(type));		 }break;
 		}

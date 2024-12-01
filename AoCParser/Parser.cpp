@@ -221,16 +221,40 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 {
 	TreeNode* id = nullptr;
 	if(ScanID(t, &id)) {
-		if (tokenizer.GetNextToken(t) && t.type == TokenType::EQUALS) {
+		if (!tokenizer.GetNextToken(t)) {
+			SyntaxError(t, "Expected more tokens after ID assignment");
+		}
+
+		if (t.type == TokenType::EQUALS) {
 			TreeNode* expression = nullptr;
 			if (tokenizer.GetNextToken(t) && (ScanExpression(t, &expression) || ScanString(t, &expression))) {
 				REGISTER_PTR(new EQUALS(id, expression), *outNode);
 				return true;
 			}
 			else {
-				SyntaxError(t, "Expected expression");
+				SyntaxError(t, "Expected expression for assignment");
 			}
 		}
+
+		// ListAssignment
+		if (t.type == TokenType::LIST_ADD) {
+			std::string id_name = static_cast<ID*>(id)->str;
+			if (declaredLists.find(id_name) == declaredLists.end())
+			{
+				SyntaxError(t, "Using undeclared list : " + id_name);
+			}
+
+			TreeNode* expression = nullptr;
+			if (tokenizer.GetNextToken(t) && ScanExpression(t, &expression)) {
+				REGISTER_PTR(new LIST_ADD(id, expression), *outNode);
+				return true;
+			}
+			else {
+				SyntaxError(t, "Expected expression for list assignment");
+			}
+		}
+
+		SyntaxError(t, "Invalid assignment syntax");
 	}
 	return false;
 }
@@ -260,6 +284,13 @@ bool Parser::ScanListDeclaration(Token t, TreeNode** outNode)
 
 			TreeNode* id = nullptr;
 			if (tokenizer.GetNextToken(t) && ScanID(t, &id)) {
+				std::string id_name = static_cast<ID*>(id)->str;
+				if (declaredLists.find(id_name) != declaredLists.end())
+				{
+					SyntaxError(t, "Duplicate List declarations! : " + id_name);
+				}
+
+				declaredLists[id_name] = 0;
 				REGISTER_PTR(new LIST_CREATE(id, isSorted, varType), *outNode);
 				return true;
 			}
@@ -267,12 +298,6 @@ bool Parser::ScanListDeclaration(Token t, TreeNode** outNode)
 		}
 		SyntaxError(t, "VariableType is required for declating a list");
 	}
-	return false;
-}
-
-bool Parser::ScanListOperators(Token t, TreeNode** outNode)
-{
-	// TODO
 	return false;
 }
 
@@ -459,7 +484,6 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 		|| ScanLoop(t, &statement)
 		|| ScanAssert(t, &statement)
 		|| ScanListDeclaration(t, &statement)
-		|| ScanListOperators(t, &statement)
 		) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
 			if (programStatement) {

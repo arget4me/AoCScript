@@ -15,15 +15,22 @@ b = "1   2";
 
 
 // two sorted lists of numbers
-sorted INTEGER list left;
-print left;
 sorted INTEGER list right;
-print right;
+sorted INTEGER list left;
+left << 2;
+left << 1;
+left << 10;
+left << 5;
+print left;
 
-unsorted INTEGER list uleft;
-print uleft;
+// Two unsorted lists for demonstration
 unsorted INTEGER list uright;
-print uright;
+unsorted INTEGER list uleft;
+uleft << 2;
+uleft << 1;
+uleft << 10;
+uleft << 5;
+print uleft;
 
 loop DAY lines: // Loop through all lines of DAY and set current line string value to variable: 'LINE'
 	print LINE; // Print string variable 'LINE' that is automatically declared
