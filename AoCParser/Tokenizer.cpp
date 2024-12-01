@@ -36,6 +36,10 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^loop\b)")							, TokenType::LOOP},
 		std::pair<std::regex, TokenType>{std::regex(R"(^times\b)")							, TokenType::LOOP_TIMES},
 		std::pair<std::regex, TokenType>{std::regex(R"(^loopstop\b)")						, TokenType::LOOP_STOP},
+		std::pair<std::regex, TokenType>{std::regex(R"(^LINE\b)")							, TokenType::LINE},
+		std::pair<std::regex, TokenType>{std::regex(R"(^CHAR\b)")							, TokenType::CHAR},
+		std::pair<std::regex, TokenType>{std::regex(R"(^lines\b)")							, TokenType::LOOP_LINES},
+		std::pair<std::regex, TokenType>{std::regex(R"(^chars\b)")							, TokenType::LOOP_CHARS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^assert\b)")							, TokenType::ASSERT},
 		std::pair<std::regex, TokenType>{std::regex(R"(^list\b)")							, TokenType::LIST},
 		std::pair<std::regex, TokenType>{std::regex(R"(^sorted\b)")							, TokenType::LIST_SORTED},
@@ -88,6 +92,7 @@ bool Tokenizer::scanToken()
 		if ((newLinePos = line.find('\n', 0)) != std::string::npos) { 
 			line = line.substr(0, newLinePos);
 		}
+		lastLine = line;
 		
 		if (checkTokenMap(singlelineTokenMap, line)) {
 			return true;

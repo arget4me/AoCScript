@@ -23,9 +23,9 @@ bool ReadFile(const std::string& filePath, std::string& fileContents) {
 	return true;
 }
 
-void SyntaxError(Token token, std::string expected)
+void SyntaxError(Tokenizer& t, Token token, std::string expected)
 {
-	throw std::invalid_argument("Syntax error: " + token.ToString() + " " + expected);
+	throw std::invalid_argument("Syntax error: " + token.ToString() + " " + expected + ".\n At: " + t.GetLastLine());
 }
 
 void RuntimeError(std::string error_message)
@@ -71,7 +71,7 @@ bool Parser::ScanExpression(Token t, TreeNode** outNode)
 				leftLogic = op;
 			}
 			else {
-				SyntaxError(t, "Expected logic operator");
+				SyntaxError(tokenizer, t, "Expected logic operator");
 				return false;
 			}
 		}
@@ -103,7 +103,7 @@ bool Parser::ScanLogic(Token t, TreeNode** outNode)
 				leftTerm = op;
 			}
 			else {
-				SyntaxError(t, "Expected term");
+				SyntaxError(tokenizer, t, "Expected term");
 				return false;
 			}
 		}
@@ -133,11 +133,11 @@ bool Parser::ScanTerm(Token t, TreeNode** outNode)
 					REGISTER_PTR(new CAST(leftFactor, VariableType::FLOAT), *outNode);
 				}
 				else {
-					SyntaxError(t, "Expected Cast TYPE");
+					SyntaxError(tokenizer, t, "Expected Cast TYPE");
 				}
 				return true;
 			}
-			SyntaxError(t, "Expected Cast TYPE but were no tokens left!");
+			SyntaxError(tokenizer, t, "Expected Cast TYPE but were no tokens left!");
 		}
 		else {
 			TreeNode* rightFactor = nullptr;
@@ -161,7 +161,7 @@ bool Parser::ScanTerm(Token t, TreeNode** outNode)
 					leftFactor = op;
 				}
 				else {
-					SyntaxError(t, "Expected term");
+					SyntaxError(tokenizer, t, "Expected term");
 					return false;
 				}
 			}
@@ -184,13 +184,13 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 	{
 		if (tokenizer.GetNextToken(t) && !ScanExpression(t, outNode))
 		{
-			SyntaxError(t, "Expected expression");
+			SyntaxError(tokenizer, t, "Expected expression");
 			return false;
 		}
 
 		if (tokenizer.GetNextToken(t) && t.type != TokenType::RPAREN)
 		{
-			SyntaxError(t, "Expected ')'");
+			SyntaxError(tokenizer, t, "Expected ')'");
 			return false;
 		}
 
@@ -212,7 +212,7 @@ bool Parser::ScanNegate(Token t, TreeNode** outNode)
 			REGISTER_PTR(new NEGATE(negateFactor), *outNode);
 			return true;
 		}
-		SyntaxError(t, "Expected factor");
+		SyntaxError(tokenizer, t, "Expected factor");
 	}
 	return false;
 }
@@ -222,7 +222,7 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 	TreeNode* id = nullptr;
 	if(ScanID(t, &id)) {
 		if (!tokenizer.GetNextToken(t)) {
-			SyntaxError(t, "Expected more tokens after ID assignment");
+			SyntaxError(tokenizer, t, "Expected more tokens after ID assignment");
 		}
 
 		if (t.type == TokenType::EQUALS) {
@@ -232,7 +232,7 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 				return true;
 			}
 			else {
-				SyntaxError(t, "Expected expression for assignment");
+				SyntaxError(tokenizer, t, "Expected expression for assignment");
 			}
 		}
 
@@ -241,7 +241,7 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 			std::string id_name = static_cast<ID*>(id)->str;
 			if (declaredLists.find(id_name) == declaredLists.end())
 			{
-				SyntaxError(t, "Using undeclared list : " + id_name);
+				SyntaxError(tokenizer, t, "Using undeclared list : " + id_name);
 			}
 
 			TreeNode* expression = nullptr;
@@ -250,11 +250,11 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 				return true;
 			}
 			else {
-				SyntaxError(t, "Expected expression for list assignment");
+				SyntaxError(tokenizer, t, "Expected expression for list assignment");
 			}
 		}
 
-		SyntaxError(t, "Invalid assignment syntax");
+		SyntaxError(tokenizer, t, "Invalid assignment syntax");
 	}
 	return false;
 }
@@ -279,7 +279,7 @@ bool Parser::ScanListDeclaration(Token t, TreeNode** outNode)
 
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LIST))
 			{
-				SyntaxError(t, "Expected 'list' keyword");
+				SyntaxError(tokenizer, t, "Expected 'list' keyword");
 			}
 
 			TreeNode* id = nullptr;
@@ -287,16 +287,16 @@ bool Parser::ScanListDeclaration(Token t, TreeNode** outNode)
 				std::string id_name = static_cast<ID*>(id)->str;
 				if (declaredLists.find(id_name) != declaredLists.end())
 				{
-					SyntaxError(t, "Duplicate List declarations! : " + id_name);
+					SyntaxError(tokenizer, t, "Duplicate List declarations! : " + id_name);
 				}
 
 				declaredLists[id_name] = 0;
 				REGISTER_PTR(new LIST_CREATE(id, isSorted, varType), *outNode);
 				return true;
 			}
-			SyntaxError(t, "Expected variable name for list declaration");
+			SyntaxError(tokenizer, t, "Expected variable name for list declaration");
 		}
-		SyntaxError(t, "VariableType is required for declating a list");
+		SyntaxError(tokenizer, t, "VariableType is required for declating a list");
 	}
 	return false;
 }
@@ -327,7 +327,7 @@ bool Parser::ScanPrint(Token t, TreeNode** outNode)
 			return true;
 		} 
 		else {
-			SyntaxError(t, "Expected identifier or string or DAY");
+			SyntaxError(tokenizer, t, "Expected identifier or string or DAY");
 		}
 	}
 	return false;
@@ -352,7 +352,7 @@ bool Parser::ScanLoad(Token t, TreeNode** outNode)
 			return true;
 		}
 		else {
-			SyntaxError(t, "Expected string");
+			SyntaxError(tokenizer, t, "Expected string");
 		}
 	}
 	return false;
@@ -364,7 +364,7 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 		TreeNode* condition;
 		if (tokenizer.GetNextToken(t) && ScanExpression(t, &condition)) {
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
-				SyntaxError(t, "Expected colon ':'");
+				SyntaxError(tokenizer, t, "Expected colon ':'");
 				return false;
 			}
 			
@@ -377,12 +377,12 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 			}
 
 			if (t.type != TokenType::IF_ELSE) {
-				SyntaxError(t, "Expected 'else'");
+				SyntaxError(tokenizer, t, "Expected 'else'");
 				return false;
 			}
 
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
-				SyntaxError(t, "Expected colon ':'");
+				SyntaxError(tokenizer, t, "Expected colon ':'");
 				return false;
 			}
 
@@ -395,7 +395,7 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 			}
 
 			if (t.type != TokenType::IF_CLOSE) {
-				SyntaxError(t, "Expected 'end'");
+				SyntaxError(tokenizer, t, "Expected 'end'");
 				return false;
 			}
 
@@ -403,7 +403,7 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 			return true;
 		}
 		else {
-			SyntaxError(t, "Expected expression");
+			SyntaxError(tokenizer, t, "Expected expression");
 		}
 	}
 	return false;
@@ -416,12 +416,12 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 		TreeNode* times;
 		if (tokenizer.GetNextToken(t) && ScanExpression(t, &times)) {
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_TIMES)) {
-				SyntaxError(t, "Expected 'times'");
+				SyntaxError(tokenizer, t, "Expected 'times'");
 				return false;
 			}
 
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
-				SyntaxError(t, "Expected colon ':'");
+				SyntaxError(tokenizer, t, "Expected colon ':'");
 				return false;
 			}
 
@@ -434,15 +434,73 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 			}
 
 			if (t.type != TokenType::LOOP_STOP) {
-				SyntaxError(t, "Expected 'loopstop'");
+				SyntaxError(tokenizer, t, "Expected 'loopstop'");
 				return false;
 			}
 
 			REGISTER_PTR(new LOOP(times, statements), *outNode);
 			return true;
 		}
+		
+		if (t.type == TokenType::DAY) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_LINES)) {
+				SyntaxError(tokenizer, t, "Expected 'lines'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(tokenizer, t, "Expected colon ':'");
+				return false;
+			}
+
+			std::vector<TreeNode*> statements;
+			{
+				TreeNode* statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					statements.push_back(statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::LOOP_STOP) {
+				SyntaxError(tokenizer, t, "Expected 'loopstop'");
+				return false;
+			}
+
+			// TODO
+
+			return true;
+		}
+
+		TreeNode* id = nullptr;
+		if ((t.type == TokenType::LINE || ScanID(t, &id))) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_CHARS)) {
+				SyntaxError(tokenizer, t, "Expected 'chars'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(tokenizer, t, "Expected colon ':'");
+				return false;
+			}
+
+			std::vector<TreeNode*> statements;
+			{
+				TreeNode* statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					statements.push_back(statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::LOOP_STOP) {
+				SyntaxError(tokenizer, t, "Expected 'loopstop'");
+				return false;
+			}
+
+			// TODO
+			return true;
+		}
 		else {
-			SyntaxError(t, "Expected expression");
+			SyntaxError(tokenizer, t, "Expected expression");
 		}
 	}
 	return false;
@@ -454,7 +512,7 @@ bool Parser::ScanAssert(Token t, TreeNode** outNode)
 		TreeNode* condition;
 		if (tokenizer.GetNextToken(t) && ScanExpression(t, &condition)) {
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
-				SyntaxError(t, "Expected colon ':'");
+				SyntaxError(tokenizer, t, "Expected colon ':'");
 				return false;
 			}
 
@@ -464,11 +522,11 @@ bool Parser::ScanAssert(Token t, TreeNode** outNode)
 				return true;
 			}
 			else {
-				SyntaxError(t, "Expected string");
+				SyntaxError(tokenizer, t, "Expected string");
 			}
 		}
 		else {
-			SyntaxError(t, "Expected expression");
+			SyntaxError(tokenizer, t, "Expected expression");
 		}
 	}
 	return false;
@@ -495,7 +553,7 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 			return true;
 		}
 		else {
-			SyntaxError(t, "Expected ; (semicolon)");
+			SyntaxError(tokenizer, t, "Expected ; (semicolon)");
 		}
 		
 	}
@@ -515,7 +573,7 @@ Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullpt
 			statement->eval(&globals);
 		}
 		if (t.type != TokenType::END) {
-			SyntaxError(t, "Expected no more statements but received more.");
+			SyntaxError(tokenizer, t, "Expected no more statements but received more.");
 		}
 
 	}

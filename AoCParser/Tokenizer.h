@@ -43,6 +43,10 @@ enum class TokenType
 	LOOP,		// 'loop'
 	LOOP_TIMES, // 'times'
 	LOOP_STOP,	// 'loopstop'
+	LINE, // 'LINE'
+	CHAR, // 'CHAR'
+	LOOP_LINES, // 'lines'
+	LOOP_CHARS, // 'chars'
 
 	// AssertStatement
 	ASSERT,		// 'assert'
@@ -63,6 +67,10 @@ enum class TokenType
 	LIST_SORTED,	// 'sorted'
 	LIST_UNSORTED,	// 'unsorted'
 	LIST_ADD,		// '<<'
+
+	
+
+
 
 	END, // end of file stream (not really needed could be removed if wanted). Helps debugging
 };
@@ -110,6 +118,10 @@ public:
 			case TokenType::LOOP: { type_string = "LOOP";	 }	break;
 			case TokenType::LOOP_TIMES: { type_string = "LOOP_TIMES";	 }	break;
 			case TokenType::LOOP_STOP: { type_string = "LOOP_STOP";	 }	break;
+			case TokenType::LINE: { type_string = "LINE";	 }	break;
+			case TokenType::CHAR: { type_string = "CHAR";	 }	break;
+			case TokenType::LOOP_LINES: { type_string = "LOOP_LINES";	 }	break;
+			case TokenType::LOOP_CHARS: { type_string = "LOOP_CHARS";	 }	break;
 
 			// AssertStatement
 			case TokenType::ASSERT: { type_string = "ASSERT";	 }	break;
@@ -168,12 +180,17 @@ public:
 		return scanToken();
 	}
 
+	std::string GetLastLine() {
+		return lastLine;
+	}
+
 private:
 	bool scanToken();
 
 	Token nextToken;
 	std::string code;
 	std::string cursor;
+	std::string lastLine;
 
 	bool checkTokenMap(const std::vector<std::pair<std::regex, TokenType>>& tokenMap, std::string& line);
 };

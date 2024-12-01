@@ -8,7 +8,7 @@
 #include "PrintHelper.h"
 
 bool ReadFile(const std::string& filePath, std::string& fileContents);
-void SyntaxError(Token token, std::string expected);
+void SyntaxError(Tokenizer& tokenizer, Token token, std::string expected);
 void RuntimeError(std::string expected);
 
 enum class VariableType

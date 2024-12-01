@@ -16,7 +16,7 @@
 	LoadStatement		::= "load" String
 	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"
 	LoopStatement		::= "loop" ( Expression "times" | Iterator ) ":" {Statement} "loopstop"
-	Iterator			::= "DAY" "." "lines" | "LINE" "." chars
+	Iterator			::= "DAY" "lines" | ( "LINE" | Identifier ) chars
 	AssertStatement		::= "assert" Expression ":" String
 	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
 	Logic				::= Term { ("+" | "-") Term}
@@ -36,13 +36,16 @@
 
 ## TODO
 [x] Need loading input file<br/>
-[ ] Need string lengths<br/>
 [ ] Need string character indexing<br/>
-[ ] Need string matching operators<br/>
 [ ] Need character matching operators<br/>
-[ ] Need string manipulations : append, substring, split, etc.<br/>
+[ ] Need string manipulations<br/>
+	[ ] append<br/>
+	[ ] substring<br/>
+	[ ] split<br/>
+[ ] Need string matching operators<br/>
+[ ] Need string lengths<br/>
+[x] Need a list data-structure : vector\<int\>.<br/>
 [ ] Probably need multiline strings.<br/>
-[ ] Need a list data-structure : vector\<int\>.<br/>
 [ ] Need a map data-structure : map<string, int>.<br/>
 
 ## Examples
