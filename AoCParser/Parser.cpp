@@ -118,29 +118,52 @@ bool Parser::ScanTerm(Token t, TreeNode** outNode)
 	if (ScanFactor(t, &leftFactor)) {
 		*outNode = leftFactor;
 
-		TreeNode* rightFactor = nullptr;
-		while (tokenizer.PeekNextToken(t) && (t.type == TokenType::MULTIPLY || t.type == TokenType::DIVIDE || t.type == TokenType::MODULO))
+		if (tokenizer.PeekNextToken(t) && t.type == TokenType::CAST_AS)
 		{
-			TokenType operatorType = t.type;
-			tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
-			if (tokenizer.GetNextToken(t) && ScanFactor(t, &rightFactor)) {
-				OPERATOR* op = nullptr;
-				if (operatorType == TokenType::MULTIPLY) {
-					op = new MULT(leftFactor, rightFactor);
+			tokenizer.ConsumeNext();
+			if (tokenizer.GetNextToken(t))
+			{
+				if (t.type == TokenType::TYPE_INTEGER) {
+					REGISTER_PTR(new CAST(leftFactor, VariableType::INTEGER), *outNode);
 				}
-				else if (operatorType == TokenType::DIVIDE) {
-					op = new DIV(leftFactor, rightFactor);
-				
+				else if (t.type == TokenType::TYPE_STRING) {
+					REGISTER_PTR(new CAST(leftFactor, VariableType::STRING), *outNode);
 				}
-				else if (operatorType == TokenType::MODULO) {
-					op = new MODULO(leftFactor, rightFactor);
+				else if (t.type == TokenType::TYPE_FLOAT) {
+					REGISTER_PTR(new CAST(leftFactor, VariableType::FLOAT), *outNode);
 				}
-				REGISTER_PTR(op, *outNode);
-				leftFactor = op;
+				else {
+					SyntaxError(t, "Expected Cast TYPE");
+				}
+				return true;
 			}
-			else {
-				SyntaxError(t, "Expected term");
-				return false;
+			SyntaxError(t, "Expected Cast TYPE but were no tokens left!");
+		}
+		else {
+			TreeNode* rightFactor = nullptr;
+			while (tokenizer.PeekNextToken(t) && (t.type == TokenType::MULTIPLY || t.type == TokenType::DIVIDE || t.type == TokenType::MODULO))
+			{
+				TokenType operatorType = t.type;
+				tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
+				if (tokenizer.GetNextToken(t) && ScanFactor(t, &rightFactor)) {
+					OPERATOR* op = nullptr;
+					if (operatorType == TokenType::MULTIPLY) {
+						op = new MULT(leftFactor, rightFactor);
+					}
+					else if (operatorType == TokenType::DIVIDE) {
+						op = new DIV(leftFactor, rightFactor);
+
+					}
+					else if (operatorType == TokenType::MODULO) {
+						op = new MODULO(leftFactor, rightFactor);
+					}
+					REGISTER_PTR(op, *outNode);
+					leftFactor = op;
+				}
+				else {
+					SyntaxError(t, "Expected term");
+					return false;
+				}
 			}
 		}
 		return true;
@@ -454,6 +477,70 @@ void LOAD::eval(RuntimeGlobals* globals)
 	if (!ReadFile(globals->DayFileName, globals->DayString))
 	{
 		RuntimeError("Could not load Day input from file {" + globals->DayFileName + "}");
+	}
+}
+
+void CAST::eval(RuntimeGlobals* globals) {
+	left->eval(globals);
+	StackVariable var = globals->pop_var();
+	StackVariable result = var;
+
+	VariableType fromType = var.type;
+	VariableType toType = type;
+
+	switch (fromType)
+	{
+	case VariableType::INTEGER:
+	{
+		switch (toType)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(result);
+			break;
+		case VariableType::STRING:
+			globals->push_var(std::to_string(var.intValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<float>(var.intValue));
+			break;
+		default:
+			break;
+		}
+	}break;
+	case VariableType::STRING:
+	{
+		switch (toType)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(std::stoi(var.strValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(var);
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(std::stof(var.strValue));
+			break;
+		default:
+			break;
+		}
+	}break;
+	case VariableType::FLOAT:
+	{
+		switch (toType)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(var.fltValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(std::to_string(var.fltValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(var);
+			break;
+		default:
+			break;
+		}
+	}break;
 	}
 }
 

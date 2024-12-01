@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <iomanip> // For manipulators : std::setprecision(2)
 #include "PrintHelper.h"
 
 bool ReadFile(const std::string& filePath, std::string& fileContents);
@@ -16,6 +17,24 @@ enum class VariableType
 	STRING,
 	FLOAT // Being added in DLC?
 };
+
+static std::string VariableTypeToString(VariableType type)
+{
+	switch (type)
+	{
+	case VariableType::INTEGER:
+		return "INTEGER";
+		break;
+	case VariableType::STRING:
+		return "STRING";
+		break;
+	case VariableType::FLOAT:
+		return "FLOAT";
+		break;
+	}
+
+	return "UNKNOWN-UNIMPLEMENTED!!";
+}
 
 struct StackVariable {
 	StackVariable() : StackVariable(0) { }
@@ -199,6 +218,22 @@ public:
 	}
 };
 
+class CAST : public TreeNode
+{
+public:
+	CAST(TreeNode* left, VariableType type) : left(left), type(type) {}
+	TreeNode* left;
+	VariableType type;
+
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " CAST TO "; 
+		std::cout << VariableTypeToString(type);
+		std::cout << ")";
+	}
+	virtual void eval(RuntimeGlobals* globals) override;
+};
+
 class GREATER_THAN : public OPERATOR
 {
 public:
@@ -342,6 +377,9 @@ public:
 			else if (type == VariableType::STRING) {
 				globals->push_var(globals->variables[str].strValue);
 			}
+			else if (type == VariableType::FLOAT) {
+				globals->push_var(globals->variables[str].fltValue);
+			}
 		}
 		else {
 			// TODO Throw runtime error
@@ -397,7 +435,7 @@ public:
 			std::cout << "\'";
 		}
 		else if (var.type == VariableType::FLOAT) {
-			std::cout << var.fltValue;
+			std::cout << std::fixed << std::setprecision(2) << var.fltValue;
 		}
 		std::cout << "\n";
 	}

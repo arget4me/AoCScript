@@ -17,11 +17,12 @@
 	AssertStatement		::= "assert" Expression ":" String
 	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
 	Logic				::= Term { ("+" | "-") Term}
-	Term				::= Factor { ("*" | "/" | "modulo" ) Factor}
+	Term				::= Factor { ("*" | "/" | "modulo" ) Factor | Cast}
 	Factor				::= Number
 							| Identifier
 							| "(" Expression ")"
 							| Negate
+	Cast				::= "as" ( "INTEGER" | "STRING" | "FLOAT" ) 
 	Negate				::= "-" Factor
 	Identifier			::= Letter { Letter | Digit }
 	Number				::= Digit { Digit }

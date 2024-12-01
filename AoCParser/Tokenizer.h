@@ -52,6 +52,12 @@ enum class TokenType
 	LPAREN,		// '('
 	RPAREN,		// ')'
 
+	// Cast
+	CAST_AS,		// 'as'
+	TYPE_INTEGER,	// 'INTEGER'
+	TYPE_STRING,	// 'STRING'
+	TYPE_FLOAT,		// 'FLOAT'
+
 	END, // end of file stream (not really needed could be removed if wanted). Helps debugging
 };
 
@@ -105,8 +111,15 @@ public:
 			// DAY
 			case TokenType::DAY: { type_string = "DAY";	 }	break;
 
+
+			// CAST
+			case TokenType::CAST_AS: { type_string = "CAST_AS";	 }	break;
+			case TokenType::TYPE_INTEGER: { type_string = "TYPE_INTEGER";	 }	break;
+			case TokenType::TYPE_STRING: { type_string = "TYPE_STRING";	 }	break;
+			case TokenType::TYPE_FLOAT: { type_string = "TYPE_FLOAT";	 }	break;
+
 			case TokenType::END:				{ type_string = "END";		 }	break;
-			default: { type_string = "UNIMPLEMENTED: Token::ToString (" + static_cast<int>(type);		 }break;
+			default: { type_string = "UNIMPLEMENTED: Token::ToString (" + std::to_string(static_cast<int>(type));		 }break;
 		}
 		std::string result = "{" + type_string + " : " + value + "}";
 		return result;

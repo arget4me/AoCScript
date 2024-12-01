@@ -4,6 +4,12 @@ load "days/2024_Day1.txt";
 a = "123";
 print a;
 aInt = a as INTEGER;
+print aInt;
+aInt = aInt as STRING;
+print aInt;
+aInt = aInt as FLOAT;
+print aInt;
+
 
 b = "1   2";
 
