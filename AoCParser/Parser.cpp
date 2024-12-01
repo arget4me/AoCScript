@@ -39,43 +39,61 @@ bool Parser::ScanExpression(Token t, TreeNode** outNode)
 	if (ScanLogic(t, &leftLogic)) {
 		*outNode = leftLogic;
 
-		TreeNode* rightLogic = nullptr;
-		while (tokenizer.PeekNextToken(t) && (
-					t.type == TokenType::GREATER_THAN
-				||	t.type == TokenType::GREATER_EQUALS
-				||	t.type == TokenType::LESS_THAN
-				||	t.type == TokenType::LESS_EQUALS
-				||	t.type == TokenType::IS_EQUAL
-		))
+		if (tokenizer.PeekNextToken(t) && (
+			t.type == TokenType::IS_DIGIT
+			|| t.type == TokenType::IS_ALPHA
+			))
 		{
-			TokenType operatorType = t.type;
-			tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
-			if (tokenizer.GetNextToken(t) && ScanLogic(t, &rightLogic)) {
-				TreeNode* op = nullptr;
-				if (operatorType == TokenType::GREATER_THAN) {
-					op = new GREATER_THAN(leftLogic, rightLogic);
-				}
-				else if (operatorType == TokenType::GREATER_EQUALS) {
-					op = new GREATER_EQUALS(leftLogic, rightLogic);
-				}
-				else if (operatorType == TokenType::LESS_THAN) {
-					op = new LESS_THAN(leftLogic, rightLogic);
-				}
-				else if (operatorType == TokenType::LESS_EQUALS) {
-					op = new LESS_EQUALS(leftLogic, rightLogic);
-				}
-				else if (operatorType == TokenType::IS_EQUAL) {
-					op = new IS_EQUAL(leftLogic, rightLogic);
-				}
-				REGISTER_PTR(op, *outNode);
-				leftLogic = op;
+			tokenizer.GetNextToken(t);
+			TreeNode* op = nullptr;
+			if (t.type == TokenType::IS_DIGIT) {
+				op = new IS_DIGIT(leftLogic);
 			}
-			else {
-				SyntaxError(tokenizer, t, "Expected logic operator");
-				return false;
+			else if (t.type == TokenType::IS_ALPHA) {
+				op = new IS_ALPHA(leftLogic);
+			}
+			REGISTER_PTR(op, *outNode);
+		}
+		else {
+			TreeNode* rightLogic = nullptr;
+			while (tokenizer.PeekNextToken(t) && (
+				t.type == TokenType::GREATER_THAN
+				|| t.type == TokenType::GREATER_EQUALS
+				|| t.type == TokenType::LESS_THAN
+				|| t.type == TokenType::LESS_EQUALS
+				|| t.type == TokenType::IS_EQUAL
+				))
+			{
+				TokenType operatorType = t.type;
+				tokenizer.ConsumeNext(); // Need to consume next since PeekNextToken doesn't consume.
+				if (tokenizer.GetNextToken(t) && ScanLogic(t, &rightLogic)) {
+					TreeNode* op = nullptr;
+					if (operatorType == TokenType::GREATER_THAN) {
+						op = new GREATER_THAN(leftLogic, rightLogic);
+					}
+					else if (operatorType == TokenType::GREATER_EQUALS) {
+						op = new GREATER_EQUALS(leftLogic, rightLogic);
+					}
+					else if (operatorType == TokenType::LESS_THAN) {
+						op = new LESS_THAN(leftLogic, rightLogic);
+					}
+					else if (operatorType == TokenType::LESS_EQUALS) {
+						op = new LESS_EQUALS(leftLogic, rightLogic);
+					}
+					else if (operatorType == TokenType::IS_EQUAL) {
+						op = new IS_EQUAL(leftLogic, rightLogic);
+					}
+					REGISTER_PTR(op, *outNode);
+					leftLogic = op;
+				}
+				else {
+					SyntaxError(tokenizer, t, "Expected logic operator");
+					return false;
+				}
 			}
 		}
 		return true;
+
 	}
 	return false;
 }
@@ -307,6 +325,14 @@ bool Parser::ScanID(Token t, TreeNode** outNode)
 		REGISTER_PTR(new ID(t.value), *outNode);
 		return true;
 	}
+	else if(t.type == TokenType::LINE) {
+		REGISTER_PTR(new ID("LINE"), *outNode);
+		return true;
+	}
+	else if(t.type == TokenType::CHAR) {
+		REGISTER_PTR(new ID("CHAR"), *outNode);
+		return true;
+	}
 	return false;
 }
 
@@ -413,8 +439,48 @@ bool Parser::ScanIf(Token t, TreeNode** outNode)
 bool Parser::ScanLoop(Token t, TreeNode** outNode)
 {
 	if (t.type == TokenType::LOOP) {
-		TreeNode* times;
-		if (tokenizer.GetNextToken(t) && ScanExpression(t, &times)) {
+		if (!tokenizer.GetNextToken(t)) {
+			SyntaxError(tokenizer, t, "loop requires an iterator or an expression");
+		}
+
+		TreeNode* id = nullptr;
+		Token nextToken;
+		if (t.type != TokenType::CHAR 
+			&& (ScanID(t, &id) && tokenizer.PeekNextToken(nextToken) && nextToken.type == TokenType::LOOP_CHARS)) {
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_CHARS)) {
+				SyntaxError(tokenizer, t, "Expected 'chars'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
+				SyntaxError(tokenizer, t, "Expected colon ':'");
+				return false;
+			}
+
+			std::vector<TreeNode*> statements;
+			{
+				TreeNode* statement = nullptr;
+				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					statements.push_back(statement);
+				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
+			}
+
+			if (t.type != TokenType::LOOP_STOP) {
+				SyntaxError(tokenizer, t, "Expected 'loopstop'");
+				return false;
+			}
+
+			REGISTER_PTR(new LOOP_ITERATOR(id, statements), *outNode);
+			return true;
+		}
+
+		if (id != nullptr) {
+			// Only case id is allocated is if ScanID succeded but the other conditions weren't met. Thus 'id' is not accurately parsed.
+			delete id;
+		}
+
+		TreeNode* times = id;
+		if (ScanExpression(t, &times)) {
 			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_TIMES)) {
 				SyntaxError(tokenizer, t, "Expected 'times'");
 				return false;
@@ -466,42 +532,11 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 				return false;
 			}
 
-			// TODO
-
+			REGISTER_PTR(new LOOP_DAY(statements), *outNode);
 			return true;
 		}
 
-		TreeNode* id = nullptr;
-		if ((t.type == TokenType::LINE || ScanID(t, &id))) {
-			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LOOP_CHARS)) {
-				SyntaxError(tokenizer, t, "Expected 'chars'");
-				return false;
-			}
-
-			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::COLON)) {
-				SyntaxError(tokenizer, t, "Expected colon ':'");
-				return false;
-			}
-
-			std::vector<TreeNode*> statements;
-			{
-				TreeNode* statement = nullptr;
-				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
-					statements.push_back(statement);
-				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
-			}
-
-			if (t.type != TokenType::LOOP_STOP) {
-				SyntaxError(tokenizer, t, "Expected 'loopstop'");
-				return false;
-			}
-
-			// TODO
-			return true;
-		}
-		else {
-			SyntaxError(tokenizer, t, "Expected expression");
-		}
+		SyntaxError(tokenizer, t, "Expected expression or iterator for loop");
 	}
 	return false;
 }
@@ -594,7 +629,6 @@ Parser::~Parser()
 	}
 }
 
-
 void LOAD::eval(RuntimeGlobals* globals)
 {
 	str->eval(globals);
@@ -603,6 +637,17 @@ void LOAD::eval(RuntimeGlobals* globals)
 	{
 		RuntimeError("Could not load Day input from file {" + globals->DayFileName + "}");
 	}
+	
+	auto splitByLines = [](const std::string& input, std::vector<std::string>& outLines) {
+		outLines.clear();
+		std::istringstream stream(input);
+		std::string line;
+
+		while (std::getline(stream, line)) {
+			outLines.push_back(line); // Add each line to the vector
+		}
+	};
+	splitByLines(globals->DayString, globals->DayLines);
 }
 
 void CAST::eval(RuntimeGlobals* globals) {

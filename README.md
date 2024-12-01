@@ -18,7 +18,7 @@
 	LoopStatement		::= "loop" ( Expression "times" | Iterator ) ":" {Statement} "loopstop"
 	Iterator			::= "DAY" "lines" | ( "LINE" | Identifier ) chars
 	AssertStatement		::= "assert" Expression ":" String
-	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic}
+	Expression			::= Logic { ("<" | ">" | "==" | "<=" | ">=" ) Logic | "is" ( "DIGIT" | "ALPHA" ) }
 	Logic				::= Term { ("+" | "-") Term}
 	Term				::= Factor { ("*" | "/" | "modulo" ) Factor | Cast}
 	Factor				::= Number

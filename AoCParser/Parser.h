@@ -151,6 +151,74 @@ public:
 	}
 };
 
+class IS_OPERATOR : public TreeNode
+{
+public:
+	IS_OPERATOR(TreeNode* left) : left(left) {}
+	TreeNode* left;
+};
+
+class IS_DIGIT : public IS_OPERATOR
+{
+public:
+	IS_DIGIT(TreeNode* left) : IS_OPERATOR(left) {}
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " IS DIGIT";
+		std::cout << ")";
+	}
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		StackVariable var = globals->pop_var();
+
+		if (var.type == VariableType::STRING) {
+			bool isDigit = var.strValue.size() > 0;
+			for (char& c : var.strValue) {
+				if (!std::isdigit(c)) {
+					isDigit = false;
+					break;
+				}
+			}
+			globals->push_var(static_cast<int>(isDigit));
+		}
+		else {
+			// The other types are already known to be digits
+			globals->push_var(1);
+		}
+	}
+};
+
+class IS_ALPHA : public IS_OPERATOR
+{
+public:
+	IS_ALPHA(TreeNode* left) : IS_OPERATOR(left) {}
+
+	virtual void print() override {
+		std::cout << "(";
+		left->print(); std::cout << " IS ALPHA";
+		std::cout << ")";
+	}
+	virtual void eval(RuntimeGlobals* globals) override {
+		left->eval(globals);
+		StackVariable var = globals->pop_var();
+
+		if (var.type == VariableType::STRING) {
+			bool isAlpha = var.strValue.size() > 0;
+			for (char& c : var.strValue) {
+				if (!std::isalpha(c)) {
+					isAlpha = false;
+					break;
+				}
+			}
+			globals->push_var(static_cast<int>(isAlpha));
+		}
+		else {
+			// The other types are already know to not be alpha
+			globals->push_var(0);
+		}
+	}
+};
+
 class OPERATOR : public TreeNode
 {
 public:
@@ -747,6 +815,72 @@ public:
 				statment->eval(globals);
 			}
 		}
+	}
+};
+
+class LOOP_ITERATOR : public TreeNode
+{
+public:
+	LOOP_ITERATOR(TreeNode* id, std::vector<TreeNode*> statements) : id(id), statements(statements) {}
+	TreeNode* id;
+	std::vector<TreeNode*> statements;
+public:
+	virtual void print() override {
+		std::cout << "LOOP "; id->print(); std::cout << " CHARS : \n";
+		for (auto statment : statements)
+		{
+			statment->print();
+		}
+		std::cout << "LOOPEND";
+
+	}
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		id->eval(globals);
+		StackVariable var = globals->pop_var();
+		if (var.type != VariableType::STRING) {
+			RuntimeError(VariableTypeToString(var.type) + " can't be used as an iterator");
+		}
+		std::string value = var.strValue;
+
+		for (auto& CHAR : value)
+		{
+			globals->variables["CHAR"] = StackVariable(std::to_string(CHAR));
+			for (auto statment : statements)
+			{
+				statment->eval(globals);
+			}
+		}
+		globals->variables.erase("CHAR");
+	}
+};
+
+class LOOP_DAY : public TreeNode
+{
+public:
+	LOOP_DAY(std::vector<TreeNode*> statements) : statements(statements) {}
+	std::vector<TreeNode*> statements;
+public:
+	virtual void print() override {
+		std::cout << "LOOP DAY LINES : \n";
+		for (auto statment : statements)
+		{
+			statment->print();
+		}
+		std::cout << "LOOPEND";
+
+	}
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		for (auto& LINE : globals->DayLines)
+		{
+			globals->variables["LINE"] = StackVariable(LINE);
+			for (auto statment : statements)
+			{
+				statment->eval(globals);
+			}
+		}
+		globals->variables.erase("LINE");
 	}
 };
 

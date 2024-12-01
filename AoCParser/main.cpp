@@ -45,7 +45,7 @@ void RunExamples() {
 void RunTest(std::string path, bool& setOnFail)
 {
 	try {
-		RunCode(path);
+		RunCode(path, true);
 	}
 	catch (const std::invalid_argument& e) {
 		(void)e; // Won't use the exception object since i should already be handled, will just display fail message.

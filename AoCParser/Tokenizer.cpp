@@ -53,6 +53,8 @@ bool Tokenizer::scanToken()
 		std::pair<std::regex, TokenType>{std::regex(R"(^INTEGER\b)")						, TokenType::TYPE_INTEGER},
 		std::pair<std::regex, TokenType>{std::regex(R"(^STRING\b)")							, TokenType::TYPE_STRING},
 		std::pair<std::regex, TokenType>{std::regex(R"(^FLOAT\b)")							, TokenType::TYPE_FLOAT},
+		std::pair<std::regex, TokenType>{std::regex(R"(^is\s+DIGIT\b)")						, TokenType::IS_DIGIT},
+		std::pair<std::regex, TokenType>{std::regex(R"(^is\s+ALPHA\b)")						, TokenType::IS_ALPHA},
 		std::pair<std::regex, TokenType>{std::regex(R"(^==)")								, TokenType::IS_EQUAL},
 		std::pair<std::regex, TokenType>{std::regex(R"(^>=)")								, TokenType::GREATER_EQUALS},
 		std::pair<std::regex, TokenType>{std::regex(R"(^<=)")								, TokenType::LESS_EQUALS},

@@ -37,7 +37,7 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 	parseNum = "";
 	isLeft = 1; // Integers can be used as booleans 0 - false, 1 - true. 0 + 1 is 'or' operator, 0 * 1 is 'and' operator.
 	loop LINE chars:  // Loop through all characters of LINE and set current character to variable: 'CHAR'
-		print CHAR; // Print CHAR variable 
+		print CHAR; // Print CHAR variable
 		if CHAR is DIGIT: // Logic check to compare if CHAR is '0' - '9'
 			parseNum = parseNum + CHAR; // Concatenate string
 		else:

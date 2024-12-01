@@ -32,6 +32,8 @@ enum class TokenType
 	LESS_THAN,		// '<'
 	LESS_EQUALS,	// '<='
 	IS_EQUAL,		// '=='
+	IS_DIGIT,		// 'is DIGIT'
+	IS_ALPHA,		// 'is ALPHA'
 
 	// IfStatement
 	IF,			// "if"
