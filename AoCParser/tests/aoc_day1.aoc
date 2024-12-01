@@ -37,7 +37,7 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 	parseNum = "";
 	isLeft = 1; // Integers can be used as booleans 0 - false, 1 - true. 0 + 1 is 'or' operator, 0 * 1 is 'and' operator.
 	loop LINE chars:  // Loop through all characters of LINE and set current character to variable: 'CHAR'
-		print CHAR; // Print CHAR variable
+		// print CHAR; // Print CHAR variable
 		if CHAR is DIGIT: // Logic check to compare if CHAR is '0' - '9'
 			parseNum = parseNum + CHAR; // Concatenate string
 		else:
@@ -47,16 +47,26 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 				// Add number to 
 				left << parseNum as INTEGER; // '...' as INTEGER, casts string to int.
 				uleft << parseNum as INTEGER; // Just for testing the language
-
+				printStr = "Add left value ";
+				printStr = printStr + parseNum;
+				print printStr;
 				parseNum = "";
-			else:end;
+			else:
+			end;
 		end;
-	loopend;
+	loopstop;
 
 	assert isLeft == 0: "Expected right value but was still parsing left!";
 	// Add number to 
 	right << parseNum as INTEGER;
 	uright << parseNum as INTEGER; // Just for testing the language
-loopend;
+
+	printStr = "Add right value ";
+	printStr = printStr + parseNum;
+	print printStr;
+loopstop;
+
+print left;
+print right;
 
 // distance = abs(left - right)

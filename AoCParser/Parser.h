@@ -239,13 +239,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
-		
-		int result = left + right;
-		globals->push_var(result);
+		StackVariable right_var = globals->pop_var();
+
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " + " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(left_var.intValue + right_var.intValue);
+			break;
+		case VariableType::STRING:
+			globals->push_var(left_var.strValue + right_var.strValue);
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(left_var.fltValue + right_var.fltValue);
+			break;
+		}		
 	}
 };
 
@@ -845,7 +859,7 @@ public:
 
 		for (auto& CHAR : value)
 		{
-			globals->variables["CHAR"] = StackVariable(std::to_string(CHAR));
+			globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
 			for (auto statment : statements)
 			{
 				statment->eval(globals);

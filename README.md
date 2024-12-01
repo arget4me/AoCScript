@@ -36,10 +36,10 @@
 
 ## TODO
 [x] Need loading input file<br/>
-[ ] Need string character indexing<br/>
-[ ] Need character matching operators<br/>
+[x] Need string character indexing<br/>
+[x] Need character matching operators<br/>
 [ ] Need string manipulations<br/>
-	[ ] append<br/>
+	[x] append<br/>
 	[ ] substring<br/>
 	[ ] split<br/>
 [ ] Need string matching operators<br/>

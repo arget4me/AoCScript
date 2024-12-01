@@ -461,6 +461,7 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 			{
 				TreeNode* statement = nullptr;
 				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
+					std::cout << "LOOP STATEMENT ADDED: "; statement->print();
 					statements.push_back(statement);
 				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
 			}
