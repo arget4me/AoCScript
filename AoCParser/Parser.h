@@ -10,6 +10,31 @@ bool ReadFile(const std::string& filePath, std::string& fileContents);
 void SyntaxError(Token token, std::string expected);
 void RuntimeError(std::string expected);
 
+enum class VariableType
+{
+	INTEGER,
+	STRING,
+	FLOAT // Being added in DLC?
+};
+
+struct StackVariable {
+	StackVariable() : StackVariable(0) { }
+	StackVariable(int intValue)
+		: type(VariableType::INTEGER), intValue(intValue), strValue(""), fltValue(0.0f) {}
+
+	StackVariable(std::string strValue)
+		: type(VariableType::STRING), intValue(0), strValue(strValue), fltValue(0.0f) {}
+
+	StackVariable(float fltValue)
+		: type(VariableType::FLOAT), intValue(0), strValue(""), fltValue(fltValue) {}
+
+	VariableType type;
+
+	int intValue;
+	std::string strValue;
+	float fltValue;
+};
+
 class RuntimeGlobals
 {
 public:
@@ -22,25 +47,20 @@ public:
 	}
 
 	~RuntimeGlobals() {
-		for (auto* stack_ptr : stack) {
-			delete stack_ptr;
-		}
-	}
+	}	
 
-	std::vector<uint8_t*> stack;
-	std::map<std::string, int> variables;
+	std::vector<StackVariable> stack;
+	std::map<std::string, StackVariable> variables;
 
 	std::vector<std::string> DayLines;
 	std::string DayString;
 	std::string DayFileName;
 
-	int pop_int();
-	std::string pop_str();
-
-	void push_int(int num);
-	void push_str(std::string str);
-
-	void pop();
+	void push_var(int var) { push_var(StackVariable(var)); };
+	void push_var(std::string var) { push_var(StackVariable(var)); };
+	void push_var(float var) { push_var(StackVariable(var)); };
+	void push_var(StackVariable var);
+	StackVariable pop_var();
 };
 
 class TreeNode
@@ -61,7 +81,7 @@ public:
 
 	virtual void eval(RuntimeGlobals* globals) override {
 		statement->eval(globals);
-		globals->pop();
+		globals->pop_var();
 	}
 };
 
@@ -85,13 +105,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 		
 		int result = left + right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -106,13 +126,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left - right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -127,13 +147,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left * right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -148,13 +168,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left / right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -169,13 +189,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left % right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -190,13 +210,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left > right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -211,13 +231,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left >= right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -232,13 +252,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left < right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -253,13 +273,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left <= right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -274,13 +294,13 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_int();
+		int left = globals->pop_var().intValue;
 
 		right->eval(globals);
-		int right = globals->pop_int();
+		int right = globals->pop_var().intValue;
 
 		int result = left == right;
-		globals->push_int(result);
+		globals->push_var(result);
 	}
 };
 
@@ -298,8 +318,8 @@ public:
 
 	virtual void eval(RuntimeGlobals* globals) override { 
 		arg->eval(globals);
-		int arg_value = globals->pop_int();
-		globals->push_int(-arg_value);
+		int arg_value = globals->pop_var().intValue;
+		globals->push_var(-arg_value);
 	}
 };
 
@@ -308,33 +328,26 @@ class ID : public TreeNode
 public:
 	ID(std::string str) : str(str) {}
 	std::string str;
+
 public:
 	virtual void print() override { std::cout << str; }
 	virtual void eval(RuntimeGlobals* globals) override 
 	{
 		auto found = globals->variables.find(str);
 		if (found != globals->variables.end()) {
-			globals->push_int(globals->variables[str]);
+			VariableType type = globals->variables[str].type;
+			if (type == VariableType::INTEGER) {
+				globals->push_var(globals->variables[str].intValue);
+			}
+			else if (type == VariableType::STRING) {
+				globals->push_var(globals->variables[str].strValue);
+			}
 		}
 		else {
 			// TODO Throw runtime error
 		}
 	}
 };
-
-class STRING : public TreeNode
-{
-public:
-	STRING(std::string str) : str(str) {}
-	std::string str;
-public:
-	virtual void print() override { std::cout << str; }
-	virtual void eval(RuntimeGlobals* globals) override
-	{
-		globals->push_str(str);
-	}
-};
-
 
 class PRINT_ID : public TreeNode
 {
@@ -346,9 +359,8 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
-		int result = globals->pop_int();
+		int result = globals->pop_var().intValue;
 		std::cout << "Simon Says: " << id_name << "\t= " << result << "\n";
-		globals->push_int(result);
 	}
 };
 
@@ -361,7 +373,7 @@ public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
 	virtual void eval(RuntimeGlobals* globals) override {
 		id->eval(globals);
-		std::string str = globals->pop_str();
+		std::string str = globals->pop_var().strValue;
 		replaceColor(str, "FAILED", CONSOLE_COLOR::RED);
 		replaceColor(str, "SUCCESS", CONSOLE_COLOR::GREEN);
 		replaceColor(str, "RED", CONSOLE_COLOR::RED);
@@ -375,8 +387,6 @@ public:
 		std::cout << "Simon Says: \'" << str;
 		ResetConsoleColor();
 		std::cout << "\'\n";
-		
-		globals->push_int(0);
 	}
 
 private:
@@ -405,7 +415,6 @@ public:
 		std::cout << "Simon Says Todays input is {\n";
 		if (globals->DayString.length() == 0) { RuntimeError("Day input not loaded before access!"); }
 		std::cout << globals->DayString << "\n}" << std::endl;
-		globals->push_int(0);
 	}
 };
 
@@ -431,9 +440,9 @@ public:
 	{
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
 		expression->eval(globals);
-		int right = globals->pop_int();
-		globals->variables[id_name] = right;
-		globals->push_int(right);
+		int right = globals->pop_var().intValue;
+		globals->variables[id_name].intValue = right;
+		globals->push_var(right);
 	}
 };
 
@@ -462,7 +471,7 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override
 	{
 		condition->eval(globals);
-		int condition_value = globals->pop_int();
+		int condition_value = globals->pop_var().intValue;
 		if (condition_value != 0)
 		{
 			for (auto statment : statements)
@@ -498,11 +507,16 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override
 	{
 		condition->eval(globals);
-		int condition_value = globals->pop_int();
+		int condition_value = globals->pop_var().intValue;
 		if (condition_value == 0)
 		{
 			str->eval(globals);
-			std::string str_value = globals->pop_str();
+			std::string str_value = globals->pop_var().strValue;
+
+			PushConsoleColor(CONSOLE_COLOR::BLUE);
+			std::cout << "Assert condition: ( "; condition->print(); std::cout << " )\n";
+			PopConsoleColor();
+
 			throw std::invalid_argument("ASSERT FAILED!: " + str_value);
 		}
 	}
@@ -527,7 +541,7 @@ public:
 	virtual void eval(RuntimeGlobals* globals) override
 	{
 		times->eval(globals);
-		int times_value = globals->pop_int();
+		int times_value = globals->pop_var().intValue;
 		for (int i = 0; i < times_value; ++i)
 		{
 			for (auto statment : statements)
@@ -535,6 +549,19 @@ public:
 				statment->eval(globals);
 			}
 		}
+	}
+};
+
+class STRING : public TreeNode
+{
+public:
+	STRING(std::string str) : str(str) {}
+	std::string str;
+public:
+	virtual void print() override { std::cout << str; }
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		globals->push_var(str);
 	}
 };
 
@@ -547,7 +574,20 @@ public:
 	virtual void print() override { std::cout << num; }
 	virtual void eval(RuntimeGlobals* globals) override
 	{
-		globals->push_int(num);
+		globals->push_var(num);
+	}
+};
+
+class FLOAT : public TreeNode
+{
+public:
+	FLOAT(float num) : num(num) {}
+	float num;
+public:
+	virtual void print() override { std::cout << num; }
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		globals->push_var(num);
 	}
 };
 

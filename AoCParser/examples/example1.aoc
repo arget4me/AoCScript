@@ -1,7 +1,11 @@
 a = 1 + 2 - 2 + 45;
+assert a == 46: "Math is broken. 'a' is wrong";
+
 c2a = 3*12 - a*2;
 a = 4*a + c2a + 12 - a/3*5 +1;
 
 print a;
 simon says c2a;
 
+assert a == 66: "Math is broken. 'a' is wrong";
+assert c2a == -56: "Math is broken. 'c2a' is wrong";

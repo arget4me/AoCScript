@@ -8,7 +8,7 @@
 							| IfStatement ";"
 							| LoopStatement ";"
 							| AssertStatement ";"
-	Assignment			::= Identifier "=" ( Expression | "LINE" )
+	Assignment			::= Identifier "=" ( Expression | "LINE" | String )
 	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String
 	IfStatement			::= "if" Expression ":" {Statement} "else" ":" {Statement} "end"

@@ -200,7 +200,7 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 	if(ScanID(t, &id)) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::EQUALS) {
 			TreeNode* expression = nullptr;
-			if (tokenizer.GetNextToken(t) && ScanExpression(t, &expression)) {
+			if (tokenizer.GetNextToken(t) && (ScanExpression(t, &expression) || ScanString(t, &expression))) {
 				REGISTER_PTR(new EQUALS(id, expression), *outNode);
 				return true;
 			}
@@ -450,45 +450,22 @@ Parser::~Parser()
 void LOAD::eval(RuntimeGlobals* globals)
 {
 	str->eval(globals);
-	globals->DayFileName = globals->pop_str();
+	globals->DayFileName = globals->pop_var().strValue;
 	if (!ReadFile(globals->DayFileName, globals->DayString))
 	{
 		RuntimeError("Could not load Day input from file {" + globals->DayFileName + "}");
 	}
-	globals->push_int(0);
 }
 
-int RuntimeGlobals::pop_int()
+void RuntimeGlobals::push_var(StackVariable var)
 {
-	auto out = stack.back();
-	int result = *reinterpret_cast<int*>(out);
+	stack.push_back(var);
+}
+
+StackVariable RuntimeGlobals::pop_var()
+{
+	if (stack.size() == 0) return StackVariable(0);
+	StackVariable result = stack.back();
 	stack.pop_back();
-	delete out;
 	return result;
-}
-
-std::string RuntimeGlobals::pop_str()
-{
-	auto out = stack.back();
-	std::string result = *reinterpret_cast<std::string*>(out);
-	stack.pop_back();
-	delete out;
-	return result;
-}
-
-void RuntimeGlobals::push_int(int num)
-{
-	stack.push_back(reinterpret_cast<uint8_t*>(new int(num)));
-}
-
-void RuntimeGlobals::push_str(std::string str)
-{
-	stack.push_back(reinterpret_cast<uint8_t*>(new std::string(str)));
-}
-
-void RuntimeGlobals::pop()
-{
-	if (stack.size() == 0) return;
-	delete stack.back();
-	stack.pop_back();
 }

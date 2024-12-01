@@ -70,9 +70,15 @@
     <None Include="tests\aoc_day1_test.aoc">
       <Filter>Tests</Filter>
     </None>
+    <None Include="tests\aoc_day1.aoc">
+      <Filter>Tests</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="days\2023_Day1.txt">
+      <Filter>days</Filter>
+    </Text>
+    <Text Include="days\2024_Day1.txt">
       <Filter>days</Filter>
     </Text>
   </ItemGroup>

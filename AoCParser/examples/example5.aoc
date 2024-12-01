@@ -11,6 +11,8 @@ loop size times:
 loopstop;
 
 print i;
-assert i == size : "'i' must be equal to 'size' at this point";
+print size;
+assert size == 10 : "'size' must be equal to '10' at this point";
+assert i == 10 : "'i' must be equal to 'size' at this point";
 
 print "SUCCESS!";

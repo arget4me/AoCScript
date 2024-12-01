@@ -45,7 +45,7 @@ void RunExamples() {
 void RunTest(std::string path, bool& setOnFail)
 {
 	try {
-		RunCode("tests/aoc_day1_test.aoc");
+		RunCode(path);
 	}
 	catch (const std::invalid_argument& e) {
 		(void)e; // Won't use the exception object since i should already be handled, will just display fail message.
@@ -56,7 +56,7 @@ void RunTest(std::string path, bool& setOnFail)
 void RunTests() {
 	bool testsFailed = false;
 	std::cout << "RUNNING TESTS\n" << std::endl;
-	RunTest("tests/aoc_day1_test.aoc", testsFailed);
+	RunTest("tests/aoc_day1.aoc", testsFailed);
 
 	if (testsFailed) {
 		PushConsoleColor(CONSOLE_COLOR::RED);
