@@ -16,10 +16,14 @@ b = "1   2";
 
 // two sorted lists of numbers
 sorted INTEGER list left;
+print left;
 sorted INTEGER list right;
+print right;
 
 unsorted INTEGER list uleft;
+print uleft;
 unsorted INTEGER list uright;
+print uright;
 
 loop DAY lines: // Loop through all lines of DAY and set current line string value to variable: 'LINE'
 	print LINE; // Print string variable 'LINE' that is automatically declared

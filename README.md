@@ -8,6 +8,10 @@
 							| IfStatement ";"
 							| LoopStatement ";"
 							| AssertStatement ";"
+							| ListDeclaration ";"
+							| ListOperators ";"
+	ListDeclaration		::= ("sorted" | "unsorted") VariableType "list" Identifier
+	ListOperators		::= Identifier "<<" Expression
 	Assignment			::= Identifier "=" ( Expression | "LINE" | String )
 	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String
@@ -22,7 +26,8 @@
 							| Identifier
 							| "(" Expression ")"
 							| Negate
-	Cast				::= "as" ( "INTEGER" | "STRING" | "FLOAT" ) 
+	Cast				::= "as" VariableType
+	VariableType		::= ( "INTEGER" | "STRING" | "FLOAT" )
 	Negate				::= "-" Factor
 	Identifier			::= Letter { Letter | Digit }
 	Number				::= Digit { Digit }

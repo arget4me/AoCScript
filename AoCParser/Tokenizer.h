@@ -58,6 +58,12 @@ enum class TokenType
 	TYPE_STRING,	// 'STRING'
 	TYPE_FLOAT,		// 'FLOAT'
 
+	// List Assignment and Operators
+	LIST,			// 'list'
+	LIST_SORTED,	// 'sorted'
+	LIST_UNSORTED,	// 'unsorted'
+	LIST_ADD,		// '<<'
+
 	END, // end of file stream (not really needed could be removed if wanted). Helps debugging
 };
 

@@ -52,6 +52,48 @@ struct StackVariable {
 	int intValue;
 	std::string strValue;
 	float fltValue;
+
+	int GetSortPrio() const {
+		switch (type)
+		{
+		case VariableType::INTEGER:
+			return intValue;
+			break;
+		case VariableType::STRING:
+			return static_cast<int>(strValue.length());
+			break;
+		case VariableType::FLOAT:
+			return static_cast<int>(fltValue);
+			break;
+		}
+		return 0;
+	}
+
+	// Overload the < operator for sorting MyClass objects
+	bool operator<(const StackVariable& other) const {
+		if (type == VariableType::STRING && other.type == VariableType::STRING)
+		{
+			return strValue < other.strValue;
+		}
+
+		return GetSortPrio() < other.GetSortPrio();
+	}
+};
+
+struct List
+{
+	List(VariableType type) : type(type) {}
+	VariableType type;
+	std::vector<StackVariable> list;
+
+	virtual void push_var(StackVariable var);
+	virtual StackVariable pop_var();
+};
+
+struct SortedList : List
+{
+	SortedList(VariableType type) : List(type) {}
+	virtual void push_var(StackVariable var) override;
 };
 
 class RuntimeGlobals
@@ -66,10 +108,15 @@ public:
 	}
 
 	~RuntimeGlobals() {
+		for (auto& pair : lists)
+		{
+			delete pair.second;
+		}
 	}	
 
 	std::vector<StackVariable> stack;
 	std::map<std::string, StackVariable> variables;
+	std::map<std::string, List*> lists;
 
 	std::vector<std::string> DayLines;
 	std::string DayString;
@@ -426,7 +473,39 @@ public:
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
 		StackVariable var = globals->pop_var();
 		std::cout << "Simon Says: " << id_name << "\t= ";
-		if (var.type == VariableType::INTEGER) {
+
+		if (globals->lists.find(id_name) != globals->lists.end())
+		{
+			std::cout << "[ ";
+			List* list = globals->lists[id_name];
+			bool first = true;
+			for (StackVariable& var : list->list)
+			{
+				if (!first) {
+					std::cout << ", ";
+				}
+				else {
+					first = false;
+				}
+
+				switch (list->type)
+				{
+				case VariableType::INTEGER:
+					std::cout << var.intValue;
+					break;
+				case VariableType::STRING:
+					std::cout << var.strValue;
+					break;
+				case VariableType::FLOAT:
+					std::cout << var.fltValue;
+					break;
+				default:
+					break;
+				}
+			}
+			std::cout << " ]";
+		}
+		else if (var.type == VariableType::INTEGER) {
 			std::cout << var.intValue;
 		}
 		else if (var.type == VariableType::STRING) {
@@ -498,6 +577,34 @@ public:
 		StackVariable var = globals->pop_var();
 		globals->variables[id_name] = var;
 		globals->push_var(var);
+	}
+};
+
+class LIST_CREATE : public TreeNode
+{
+public:
+	LIST_CREATE(TreeNode* id, bool sorted, VariableType type)
+		: id(id), sorted(sorted), type(type) {}
+	TreeNode* id;
+	bool sorted;
+	VariableType type;
+public:
+	virtual void print() override { 
+		std::cout << "CREATE LIST<" << VariableTypeToString(type) << "> ( ";
+		id->print();
+		std::cout << " )";
+	}
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+		if (sorted)
+		{
+			globals->lists[id_name] = new SortedList(type);
+		}
+		else
+		{
+			globals->lists[id_name] = new List(type);
+		}
 	}
 };
 
@@ -660,6 +767,8 @@ private:
 	bool ScanFactor(Token t, TreeNode** outNode);
 	bool ScanNegate(Token t, TreeNode** outNode);
 	bool ScanAssignment(Token t, TreeNode** outNode);
+	bool ScanListDeclaration(Token t, TreeNode** outNode);
+	bool ScanListOperators(Token t, TreeNode** outNode);
 	bool ScanID(Token t, TreeNode** outNode);
 	bool ScanString(Token t, TreeNode** outNode);
 	bool ScanPrint(Token t, TreeNode** outNode);

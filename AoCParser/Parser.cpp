@@ -235,6 +235,47 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 	return false;
 }
 
+bool Parser::ScanListDeclaration(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::LIST_SORTED || t.type == TokenType::LIST_UNSORTED)
+	{
+		bool isSorted = t.type == TokenType::LIST_SORTED;
+		if (tokenizer.GetNextToken(t))
+		{
+			VariableType varType = VariableType::INTEGER;
+			if (t.type == TokenType::TYPE_INTEGER) {
+				varType = VariableType::INTEGER;
+			}
+			else if (t.type == TokenType::TYPE_STRING) {
+				varType = VariableType::STRING;
+			}
+			else if (t.type == TokenType::TYPE_FLOAT) {
+				varType = VariableType::FLOAT;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::LIST))
+			{
+				SyntaxError(t, "Expected 'list' keyword");
+			}
+
+			TreeNode* id = nullptr;
+			if (tokenizer.GetNextToken(t) && ScanID(t, &id)) {
+				REGISTER_PTR(new LIST_CREATE(id, isSorted, varType), *outNode);
+				return true;
+			}
+			SyntaxError(t, "Expected variable name for list declaration");
+		}
+		SyntaxError(t, "VariableType is required for declating a list");
+	}
+	return false;
+}
+
+bool Parser::ScanListOperators(Token t, TreeNode** outNode)
+{
+	// TODO
+	return false;
+}
+
 bool Parser::ScanID(Token t, TreeNode** outNode)
 {
 	if (t.type == TokenType::ID) {
@@ -417,6 +458,8 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 		|| ScanIf(t, &statement) 
 		|| ScanLoop(t, &statement)
 		|| ScanAssert(t, &statement)
+		|| ScanListDeclaration(t, &statement)
+		|| ScanListOperators(t, &statement)
 		) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
 			if (programStatement) {
@@ -543,6 +586,42 @@ void CAST::eval(RuntimeGlobals* globals) {
 	}break;
 	}
 }
+
+void List::push_var(StackVariable var)
+{
+	list.push_back(var);
+}
+
+StackVariable List::pop_var()
+{
+	if (list.size() == 0) return StackVariable(0);
+	StackVariable result = list.back();
+	list.pop_back();
+	return result;
+}
+
+
+void SortedList::push_var(StackVariable var)
+{
+	auto insertion_sort = [](std::vector<StackVariable>& vec, StackVariable value) {
+		auto it = std::lower_bound(vec.begin(), vec.end(), value);
+		vec.insert(it, value);
+	};
+
+	insertion_sort(list, var);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 void RuntimeGlobals::push_var(StackVariable var)
 {
