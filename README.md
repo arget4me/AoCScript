@@ -24,6 +24,7 @@
 	Factor				::= Number
 							| Identifier
 							| Identifier "[" Expression "]"
+							| Identifier "size"
 							| "(" Expression ")"
 							| Negate
 							| String
@@ -51,6 +52,14 @@
 [ ] Need a map data-structure : map<string, int>.<br/>
 
 ## Examples
+
+### Day 1
+
+![Gold Star](/screenshots/day1/gold_star.png)
+![Output](/screenshots/day1/result.png)
+
+Code from "tests/aoc_day1.aoc":
+![Code](/screenshots/day1/code_day1.png)
 
 ### Code from "examples/example7.aoc":
 
