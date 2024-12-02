@@ -196,6 +196,8 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 		return true;
 	}
 	else if (ScanID(t, outNode)) {
+		// TODO PEEK NEXT TOKEN FOR "[" EXPRESSION "]"
+
 		return true;
 	}
 	else if (t.type == TokenType::LPAREN)
@@ -215,6 +217,9 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 		return true;
 	}
 	else if (ScanNegate(t, outNode)) {
+		return true;
+	}
+	else if (ScanString(t, outNode)) {
 		return true;
 	}
 	return false;

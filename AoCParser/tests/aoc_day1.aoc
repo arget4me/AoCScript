@@ -47,8 +47,7 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 				// Add number to 
 				left << parseNum as INTEGER; // '...' as INTEGER, casts string to int.
 				uleft << parseNum as INTEGER; // Just for testing the language
-				printStr = "Add left value ";
-				printStr = printStr + parseNum;
+				printStr = "Add left value " + parseNum;
 				print printStr;
 				parseNum = "";
 			else:
@@ -61,12 +60,25 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 	right << parseNum as INTEGER;
 	uright << parseNum as INTEGER; // Just for testing the language
 
-	printStr = "Add right value ";
-	printStr = printStr + parseNum;
+	printStr = "Add right value " + parseNum;
 	print printStr;
+loopstop;
+
+loop left chars:
+	a = CHAR;
+	print a;
 loopstop;
 
 print left;
 print right;
+
+sorted STRING list str;
+str << "abc";
+str << "def";
+str << "ghi";
+
+loop str chars:
+	print CHAR;
+loopstop;
 
 // distance = abs(left - right)

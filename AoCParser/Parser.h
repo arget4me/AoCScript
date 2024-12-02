@@ -850,22 +850,68 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override
 	{
-		id->eval(globals);
-		StackVariable var = globals->pop_var();
-		if (var.type != VariableType::STRING) {
-			RuntimeError(VariableTypeToString(var.type) + " can't be used as an iterator");
-		}
-		std::string value = var.strValue;
-
-		for (auto& CHAR : value)
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+		if (globals->lists.find(id_name) != globals->lists.end())
 		{
-			globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
-			for (auto statment : statements)
+			List* list = globals->lists[id_name];
+			for (StackVariable& var : list->list)
 			{
-				statment->eval(globals);
+				switch (list->type)
+				{
+				case VariableType::INTEGER:
+					{
+						globals->variables["CHAR"] = StackVariable(var.intValue);
+						for (auto statment : statements)
+						{
+							statment->eval(globals);
+						}
+					}
+					break;
+				case VariableType::STRING:
+					{
+						std::string value = var.strValue;
+						for (auto& CHAR : value)
+						{
+							globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
+							for (auto statment : statements)
+							{
+								statment->eval(globals);
+							}
+						}
+					}
+					break;
+				case VariableType::FLOAT:
+					{
+						globals->variables["CHAR"] = StackVariable(var.fltValue);
+						for (auto statment : statements)
+						{
+							statment->eval(globals);
+						}
+					}
+					break;
+				default:
+					break;
+				}
 			}
 		}
-		globals->variables.erase("CHAR");
+		else {
+			id->eval(globals);
+			StackVariable var = globals->pop_var();
+			if (var.type != VariableType::STRING) {
+				RuntimeError(VariableTypeToString(var.type) + " can't be used as an iterator");
+			}
+			std::string value = var.strValue;
+
+			for (auto& CHAR : value)
+			{
+				globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
+				for (auto statment : statements)
+				{
+					statment->eval(globals);
+				}
+			}
+			globals->variables.erase("CHAR");
+		}
 	}
 };
 

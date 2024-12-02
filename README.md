@@ -23,8 +23,10 @@
 	Term				::= Factor { ("*" | "/" | "modulo" ) Factor | Cast}
 	Factor				::= Number
 							| Identifier
+							| Identifier "[" Expression "]"
 							| "(" Expression ")"
 							| Negate
+							| String
 	Cast				::= "as" VariableType
 	VariableType		::= ( "INTEGER" | "STRING" | "FLOAT" )
 	Negate				::= "-" Factor
