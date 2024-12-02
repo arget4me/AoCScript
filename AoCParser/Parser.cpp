@@ -196,8 +196,33 @@ bool Parser::ScanFactor(Token t, TreeNode** outNode)
 		return true;
 	}
 	else if (ScanID(t, outNode)) {
+		TreeNode* id = *outNode;
 		// TODO PEEK NEXT TOKEN FOR "[" EXPRESSION "]"
+		if (tokenizer.PeekNextToken(t) && t.type == TokenType::LBRACKET)
+		{
+			tokenizer.ConsumeNext();
+			TreeNode* expression = nullptr;
+			if (tokenizer.GetNextToken(t) && !ScanExpression(t, &expression))
+			{
+				SyntaxError(tokenizer, t, "Expected expression");
+				return false;
+			}
 
+			if (tokenizer.GetNextToken(t) && t.type != TokenType::RBRACKET)
+			{
+				SyntaxError(tokenizer, t, "Expected ')'");
+				return false;
+			}
+
+			REGISTER_PTR(new ARRAY_INDEXING(id, expression), *outNode);
+			return true;
+		}
+		else if (tokenizer.PeekNextToken(t) && t.type == TokenType::ARRAY_SIZE)
+		{
+			tokenizer.ConsumeNext();
+			REGISTER_PTR(new ARRAY_SIZE(id), *outNode);
+			return true;
+		}
 		return true;
 	}
 	else if (t.type == TokenType::LPAREN)
@@ -466,7 +491,6 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 			{
 				TreeNode* statement = nullptr;
 				while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement, false)) {
-					std::cout << "LOOP STATEMENT ADDED: "; statement->print();
 					statements.push_back(statement);
 				} // Will end on GetNextToken being called and ScanExpression failing, don't have to call get next token again.
 			}

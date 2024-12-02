@@ -1,79 +1,52 @@
-load "days/2024_Day1.txt";
-// print DAY;
+load "days/2024_Day1.txt";					// Load input for this day and store it in keyword DAY
 
-a = "123";
-print a;
-aInt = a as INTEGER;
-print aInt;
-aInt = aInt as STRING;
-print aInt;
-aInt = aInt as FLOAT;
-print aInt;
-
-// two sorted lists of numbers
-sorted INTEGER list right;
-sorted INTEGER list left;
-
-// Two unsorted lists for demonstration
-unsorted INTEGER list uright;
-unsorted INTEGER list uleft;
+// two sorted lists of numbers (insertion sort), unsorted can be used as well with keyword 'unsorted'.
+sorted INTEGER list rightList;
+sorted INTEGER list leftList;
 
 numLines = 0;
-loop DAY lines: // Loop through all lines of DAY and set current line string value to variable: 'LINE'
-	print LINE; // Print string variable 'LINE' that is automatically declared
+loop DAY lines:								// Loop through all lines of DAY and set current line string value to variable: 'LINE'
 	parseNum = "";
-	isLeft = 1; // Integers can be used as booleans 0 - false, 1 - true. 0 + 1 is 'or' operator, 0 * 1 is 'and' operator.
-	loop LINE chars:  // Loop through all characters of LINE and set current character to variable: 'CHAR'
-		// print CHAR; // Print CHAR variable
-		if CHAR is DIGIT: // Logic check to compare if CHAR is '0' - '9'
-			parseNum = parseNum + CHAR; // Concatenate string
+	isLeft = 1;								// Integers can be used as booleans 0 - false, 1 - true. 0 + 1 is 'or' operator, 0 * 1 is 'and' operator.
+	loop LINE chars:						// Loop through all characters of LINE and set current character to variable: 'CHAR'
+		if CHAR is DIGIT:					// Logic check to compare if CHAR is '0' - '9'
+			parseNum = parseNum + CHAR;		// Concatenate string
 		else:
 			if isLeft:
 				isLeft = 0;
 
-				// Add number to 
-				left << parseNum as INTEGER; // '...' as INTEGER, casts string to int.
-				uleft << parseNum as INTEGER; // Just for testing the language
-				printStr = "Add left value " + parseNum;
-				print printStr;
+				leftList << parseNum as INTEGER;		// '...' as INTEGER, casts string to int. '<<' Adds an entry to a list
+
+				// PRINT keyword currently can't work with expressions, workaround is to store string concatenation in a variable and then print
+				printStr = "Add leftList value " + parseNum; print printStr; 
 				parseNum = "";
 			else:
 			end;
 		end;
 	loopstop;
 
-	assert isLeft == 0: "Expected right value but was still parsing left!";
-	// Add number to 
-	right << parseNum as INTEGER;
-	uright << parseNum as INTEGER; // Just for testing the language
+	assert isLeft == 0: "Expected rightList value but was still parsing leftList!";
+	rightList << parseNum as INTEGER;
 
-	printStr = "Add right value " + parseNum;
-	print printStr;
+	printStr = "Add rightList value " + parseNum; print printStr;
 	numLines = numLines + 1;
 loopstop;
 
+lSize = leftList size; rSize = rightList size;
+assert lSize == rSize: "Left list and Right list must have equal lengths";
+
+totalDistance = 0;
 i = 0;
-loop left chars:
+loop leftList chars:				// Loop 'ID' chars: syntax works for lists and strings as well. Will loop thorugh each entry, CHAR is current entry.
+	distance = leftList[i] - rightList[i];
+	if rightList[i] > leftList[i]:
+		distance = distance * -1;
+	else:end;
+	assert distance >= 0: "Distance must be positive";
+
+	totalDistance = totalDistance + distance;
 	i = i + 1;
 loopstop;
-assert i == numLines: "Left list can't have more entries than lines!";
 
-r = 0;
-loop right chars:
-	r = r + 1;
-loopstop;
-assert i == r: "List must have equal amount of entries";
-
-// print left;
-// print right;
-
-sorted STRING list str;
-str << "abc";
-str << "def";
-str << "ghi";
-
-loop str chars:
-	print CHAR;
-loopstop;
-
-// distance = abs(left - right)
+result = "GREEN: " + totalDistance as STRING;
+print result;

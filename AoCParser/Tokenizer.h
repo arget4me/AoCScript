@@ -57,6 +57,11 @@ enum class TokenType
 	// Expressions
 	LPAREN,		// '('
 	RPAREN,		// ')'
+	LBRACKET,	// '['
+	RBRACKET,	// ']'
+	LBRACE,		// '{'
+	RBRACE,		// '}'
+	ARRAY_SIZE,		// 'size'
 
 	// Cast
 	CAST_AS,		// 'as'
