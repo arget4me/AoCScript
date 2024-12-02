@@ -10,28 +10,15 @@ print aInt;
 aInt = aInt as FLOAT;
 print aInt;
 
-
-b = "1   2";
-
-
 // two sorted lists of numbers
 sorted INTEGER list right;
 sorted INTEGER list left;
-left << 2;
-left << 1;
-left << 10;
-left << 5;
-print left;
 
 // Two unsorted lists for demonstration
 unsorted INTEGER list uright;
 unsorted INTEGER list uleft;
-uleft << 2;
-uleft << 1;
-uleft << 10;
-uleft << 5;
-print uleft;
 
+numLines = 0;
 loop DAY lines: // Loop through all lines of DAY and set current line string value to variable: 'LINE'
 	print LINE; // Print string variable 'LINE' that is automatically declared
 	parseNum = "";
@@ -62,15 +49,23 @@ loop DAY lines: // Loop through all lines of DAY and set current line string val
 
 	printStr = "Add right value " + parseNum;
 	print printStr;
+	numLines = numLines + 1;
 loopstop;
 
+i = 0;
 loop left chars:
-	a = CHAR;
-	print a;
+	i = i + 1;
 loopstop;
+assert i == numLines: "Left list can't have more entries than lines!";
 
-print left;
-print right;
+r = 0;
+loop right chars:
+	r = r + 1;
+loopstop;
+assert i == r: "List must have equal amount of entries";
+
+// print left;
+// print right;
 
 sorted STRING list str;
 str << "abc";

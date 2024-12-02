@@ -610,7 +610,9 @@ Parser::Parser(std::string code, bool printSyntax) : tokenizer(code), ast(nullpt
 		while (tokenizer.GetNextToken(t) && ScanStatement(t, &statement))
 		{
 			statements.push_back(statement);
+			PushConsoleColor(CONSOLE_COLOR::YELLOW);
 			if (printSyntax) { std::cout << "\t\t"; statement->print(); }
+			PopConsoleColor();
 			statement->eval(&globals);
 		}
 		if (t.type != TokenType::END) {
