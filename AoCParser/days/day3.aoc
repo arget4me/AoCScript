@@ -1,7 +1,83 @@
 load "input/2024_Day3.txt";
+
+unsorted STRING list keywords;
+keywords << "mul(";
+keywords << ",";
+keywords << ")";
+
+
+finalResult = 0;
 loop DAY lines:
-	print LINE;
+	startIdx = 0;
 	loop LINE chars:
+		leftValue = -1;
+		rightValue = -1;
+		if ITER < startIdx:
+		else:
+			startIdx = ITER;
+			loop keywords chars:
+				keyword = CHAR;
+				match = 0;
+				nextIndex = 0;
+				loop keyword size times:
+					index = startIdx + ITER;
+					if (index >= (LINE size)): break; else:end;
+					if (keyword[ITER] == LINE[index]) == 0:
+						break;
+					else:end;
+				
+					if ITER == (keyword size - 1):
+						match = 1;
+						nextIndex = index + 1;
+					else:end;
+				loopstop;
+				if match == 0: break; else:end;
+
+				parseNum = "";
+				if (ITER == 0) + (ITER == 1):
+					loop 3 times:
+						index = nextIndex + ITER;
+						if (index >= (LINE size)): break; else:end;
+
+						if LINE[index] is DIGIT:
+							parseNum = parseNum + LINE[index];
+						else:
+							break;
+						end;
+					loopstop;
+				else:end;
+
+				if ITER == 0:
+					// Parse left
+					if (parseNum size) > 0:
+						leftValue = parseNum as INTEGER;
+						nextIndex = nextIndex + parseNum size;
+					else: break; end;
+				else:end;
+
+				if ITER == 1:
+					// Parse right
+					if (parseNum size) > 0:
+						rightValue = parseNum as INTEGER;
+						nextIndex = nextIndex + parseNum size;
+					else: break; end;
+				else:end;
+
+				if ITER == 2:
+					// Multiply
+					print leftValue;
+					print rightValue;
+					mult = leftValue * rightValue;
+					finalResult = finalResult + mult;
+					print mult;
+				else:end;
+
+				startIdx = nextIndex;
+			loopstop;
+		end;
 		// print CHAR;
 	loopstop;
 loopstop;
+
+assert finalResult == 183380722: "Solution broke";
+print finalResult;
