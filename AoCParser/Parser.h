@@ -401,13 +401,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
+		StackVariable right_var = globals->pop_var();
 
-		int result = left > right;
-		globals->push_var(result);
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " > " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(left_var.intValue > right_var.intValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(static_cast<int>(left_var.strValue > right_var.strValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<int>(left_var.fltValue > right_var.fltValue));
+			break;
+		}
 	}
 };
 
@@ -423,13 +437,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
+		StackVariable right_var = globals->pop_var();
 
-		int result = left >= right;
-		globals->push_var(result);
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " >= " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(left_var.intValue >= right_var.intValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(static_cast<int>(left_var.strValue >= right_var.strValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<int>(left_var.fltValue >= right_var.fltValue));
+			break;
+		}
 	}
 };
 
@@ -445,13 +473,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
+		StackVariable right_var = globals->pop_var();
 
-		int result = left < right;
-		globals->push_var(result);
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " < " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(left_var.intValue < right_var.intValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(static_cast<int>(left_var.strValue < right_var.strValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<int>(left_var.fltValue < right_var.fltValue));
+			break;
+		}
 	}
 };
 
@@ -467,13 +509,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
+		StackVariable right_var = globals->pop_var();
 
-		int result = left <= right;
-		globals->push_var(result);
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " <= " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(left_var.intValue <= right_var.intValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(static_cast<int>(left_var.strValue <= right_var.strValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<int>(left_var.fltValue <= right_var.fltValue));
+			break;
+		}
 	}
 };
 
@@ -489,13 +545,27 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override {
 		left->eval(globals);
-		int left = globals->pop_var().intValue;
+		StackVariable left_var = globals->pop_var();
 
 		right->eval(globals);
-		int right = globals->pop_var().intValue;
+		StackVariable right_var = globals->pop_var();
 
-		int result = left == right;
-		globals->push_var(result);
+		if (left_var.type != right_var.type) {
+			RuntimeError("Type mismatch: " + VariableTypeToString(left_var.type) + " == " + VariableTypeToString(right_var.type));
+		}
+
+		switch (left_var.type)
+		{
+		case VariableType::INTEGER:
+			globals->push_var(static_cast<int>(left_var.intValue == right_var.intValue));
+			break;
+		case VariableType::STRING:
+			globals->push_var(static_cast<int>(left_var.strValue == right_var.strValue));
+			break;
+		case VariableType::FLOAT:
+			globals->push_var(static_cast<int>(left_var.fltValue == right_var.fltValue));
+			break;
+		}
 	}
 };
 
@@ -1020,16 +1090,12 @@ public:
 					break;
 				case VariableType::STRING:
 					{
-						std::string value = var.strValue;
-						for (auto& CHAR : value)
+						for (auto statment : statements)
 						{
-							for (auto statment : statements)
-							{
-								globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
-								globals->variables["ITER"] = ITER;
-								statment->eval(globals);
-								if (doBreak || globals->pop_break()) { doBreak = true;  break; }
-							}
+							globals->variables["CHAR"] = StackVariable(var.strValue);
+							globals->variables["ITER"] = ITER;
+							statment->eval(globals);
+							if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 						}
 					}
 					break;
