@@ -1,0 +1,52 @@
+load "days/2024_Day1.txt";					// Load input for this day and store it in keyword DAY
+
+// two sorted lists of numbers (insertion sort), unsorted can be used as well with keyword 'unsorted'.
+sorted INTEGER list rightList;
+sorted INTEGER list leftList;
+
+numLines = 0;
+loop DAY lines:								// Loop through all lines of DAY and set current line string value to variable: 'LINE'
+	parseNum = "";
+	isLeft = 1;								// Integers can be used as booleans 0 - false, 1 - true. 0 + 1 is 'or' operator, 0 * 1 is 'and' operator.
+	loop LINE chars:						// Loop through all characters of LINE and set current character to variable: 'CHAR'
+		if CHAR is DIGIT:					// Logic check to compare if CHAR is '0' - '9'
+			parseNum = parseNum + CHAR;		// Concatenate string
+		else:
+			if isLeft:
+				isLeft = 0;
+
+				leftList << parseNum as INTEGER;		// '...' as INTEGER, casts string to int. '<<' Adds an entry to a list
+
+				// PRINT keyword currently can't work with expressions, workaround is to store string concatenation in a variable and then print
+				// printStr = "Add leftList value " + parseNum; print printStr; 
+				parseNum = "";
+			else:
+			end;
+		end;
+	loopstop;
+
+	assert isLeft == 0: "Expected rightList value but was still parsing leftList!";
+	rightList << parseNum as INTEGER;
+
+	// printStr = "Add rightList value " + parseNum; print printStr;
+	numLines = numLines + 1;
+loopstop;
+
+lSize = leftList size; rSize = rightList size;
+assert lSize == rSize: "Left list and Right list must have equal lengths";
+
+similarityScore = 0;
+loop leftList chars:				// Loop 'ID' chars: syntax works for lists and strings as well. Will loop thorugh each entry, CHAR is current entry.
+	lNumber = CHAR;
+	appearances = 0;
+	loop rightList chars:				// Loop 'ID' chars: syntax works for lists and strings as well. Will loop thorugh each entry, CHAR is current entry.
+		rNumber = CHAR;
+		if lNumber == rNumber:
+			appearances = appearances + 1;
+		else:end;
+	loopstop;
+	similarityScore = similarityScore + lNumber * appearances;
+loopstop;
+
+result = "GREEN Similarity scors is " + similarityScore as STRING;
+print result; 

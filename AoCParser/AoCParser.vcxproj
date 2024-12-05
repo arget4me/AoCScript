@@ -193,6 +193,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
     </None>
     <None Include="tests\aoc_day1.aoc" />
+    <None Include="tests\aoc_day1b.aoc" />
     <None Include="tests\aoc_day1_test.aoc">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
