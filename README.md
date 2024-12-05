@@ -9,6 +9,8 @@
 							| LoopStatement ";"
 							| AssertStatement ";"
 							| ListDeclaration ";"
+							| BreakStatement ";"
+	BreakStatement		::= "break" | "noloop"
 	ListDeclaration		::= ("sorted" | "unsorted") VariableType "list" Identifier
 	Assignment			::= Identifier ( "=" ( Expression | "LINE" | String ) | ListAssignment )
 	ListAssignment		::= "<<" Expression

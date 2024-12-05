@@ -49,6 +49,7 @@ enum class TokenType
 	CHAR, // 'CHAR'
 	LOOP_LINES, // 'lines'
 	LOOP_CHARS, // 'chars'
+	LOOP_BREAK, // 'break'
 
 	// AssertStatement
 	ASSERT,		// 'assert'

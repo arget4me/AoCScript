@@ -105,6 +105,7 @@ public:
 		DayLines = {};
 		DayString = "";
 		DayFileName = "";
+		breakCounter = 0;
 	}
 
 	~RuntimeGlobals() {
@@ -127,6 +128,18 @@ public:
 	void push_var(float var) { push_var(StackVariable(var)); };
 	void push_var(StackVariable var);
 	StackVariable pop_var();
+
+
+	void push_break() { ++breakCounter; };
+	bool pop_break() {
+		if (breakCounter > 0) {
+			--breakCounter; 
+			return true;
+		}
+		return false;
+	}
+private:
+	int breakCounter;
 };
 
 class TreeNode
@@ -946,13 +959,22 @@ public:
 	{
 		times->eval(globals);
 		int times_value = globals->pop_var().intValue;
+
+		bool doBreak = false;
+		int ITER = 0;
 		for (int i = 0; i < times_value; ++i)
 		{
 			for (auto statment : statements)
 			{
+				globals->variables["ITER"] = ITER;
 				statment->eval(globals);
+				if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 			}
+			if (doBreak || globals->pop_break()) { doBreak = true;  break; }
+
+			++ITER;
 		}
+		globals->variables.erase("ITER");
 	}
 };
 
@@ -979,16 +1001,20 @@ public:
 		if (globals->lists.find(id_name) != globals->lists.end())
 		{
 			List* list = globals->lists[id_name];
+			bool doBreak = false;
+			int ITER = 0;
 			for (StackVariable& var : list->list)
 			{
 				switch (list->type)
 				{
 				case VariableType::INTEGER:
 					{
-						globals->variables["CHAR"] = StackVariable(var.intValue);
 						for (auto statment : statements)
 						{
+							globals->variables["CHAR"] = StackVariable(var.intValue);
+							globals->variables["ITER"] = ITER;
 							statment->eval(globals);
+							if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 						}
 					}
 					break;
@@ -997,27 +1023,35 @@ public:
 						std::string value = var.strValue;
 						for (auto& CHAR : value)
 						{
-							globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
 							for (auto statment : statements)
 							{
+								globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
+								globals->variables["ITER"] = ITER;
 								statment->eval(globals);
+								if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 							}
 						}
 					}
 					break;
 				case VariableType::FLOAT:
 					{
-						globals->variables["CHAR"] = StackVariable(var.fltValue);
 						for (auto statment : statements)
 						{
+							globals->variables["CHAR"] = StackVariable(var.fltValue);
+							globals->variables["ITER"] = ITER;
 							statment->eval(globals);
+							if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 						}
 					}
 					break;
 				default:
 					break;
 				}
+				if (doBreak || globals->pop_break()) { doBreak = true;  break; }
+				++ITER;
 			}
+			globals->variables.erase("CHAR");
+			globals->variables.erase("ITER");
 		}
 		else {
 			id->eval(globals);
@@ -1027,15 +1061,23 @@ public:
 			}
 			std::string value = var.strValue;
 
+			bool doBreak = false;
+			int ITER = 0;
 			for (auto& CHAR : value)
 			{
-				globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
 				for (auto statment : statements)
 				{
+					globals->variables["CHAR"] = StackVariable(std::string(1, CHAR));
+					globals->variables["ITER"] = ITER;
 					statment->eval(globals);
+					if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 				}
+				if (doBreak || globals->pop_break()) { doBreak = true;  break; }
+
+				++ITER;
 			}
 			globals->variables.erase("CHAR");
+			globals->variables.erase("ITER");
 		}
 	}
 };
@@ -1058,15 +1100,36 @@ public:
 	}
 	virtual void eval(RuntimeGlobals* globals) override
 	{
+		bool doBreak = false;
+		int ITER = 0;
 		for (auto& LINE : globals->DayLines)
 		{
-			globals->variables["LINE"] = StackVariable(LINE);
 			for (auto statment : statements)
 			{
+				globals->variables["LINE"] = StackVariable(LINE);
+				globals->variables["ITER"] = ITER;
 				statment->eval(globals);
+				if (doBreak || globals->pop_break()) { doBreak = true;  break; }
 			}
+			if (doBreak || globals->pop_break()) { doBreak = true;  break; }
+
+			++ITER;
 		}
 		globals->variables.erase("LINE");
+		globals->variables.erase("ITER");
+	}
+};
+
+class BREAK : public TreeNode
+{
+public:
+	BREAK() {}
+	virtual ~BREAK() override = default;
+public:
+	virtual void print() override { std::cout << "BREAK"; }
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		globals->push_break();
 	}
 };
 
@@ -1128,6 +1191,7 @@ private:
 	bool ScanAssignment(Token t, TreeNode** outNode);
 	bool ScanListDeclaration(Token t, TreeNode** outNode);
 	bool ScanID(Token t, TreeNode** outNode);
+	bool ScanBreak(Token t, TreeNode** outNode);
 	bool ScanString(Token t, TreeNode** outNode);
 	bool ScanPrint(Token t, TreeNode** outNode);
 	bool ScanLoad(Token t, TreeNode** outNode);

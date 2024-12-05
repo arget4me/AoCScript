@@ -390,6 +390,15 @@ bool Parser::ScanPrint(Token t, TreeNode** outNode)
 	return false;
 }
 
+bool Parser::ScanBreak(Token t, TreeNode** outNode)
+{
+	if (t.type == TokenType::LOOP_BREAK) {
+		REGISTER_PTR(new BREAK(), *outNode);
+		return true;
+	}
+	return false;
+}
+
 bool Parser::ScanString(Token t, TreeNode** outNode)
 {
 	if (t.type == TokenType::STRING) {
@@ -609,6 +618,7 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 		|| ScanLoop(t, &statement)
 		|| ScanAssert(t, &statement)
 		|| ScanListDeclaration(t, &statement)
+		|| ScanBreak(t, &statement)
 		) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
 			REGISTER_PTR(new Statement(statement), *outNode);
