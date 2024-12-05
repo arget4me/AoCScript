@@ -48,5 +48,6 @@ loop leftList chars:				// Loop 'ID' chars: syntax works for lists and strings a
 	similarityScore = similarityScore + lNumber * appearances;
 loopstop;
 
+assert similarityScore == 27267728: "Solution broke!";
 result = "GREEN Similarity scors is " + similarityScore as STRING;
 print result; 

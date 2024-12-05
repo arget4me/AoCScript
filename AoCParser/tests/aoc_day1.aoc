@@ -18,7 +18,7 @@ loop DAY lines:								// Loop through all lines of DAY and set current line str
 				leftList << parseNum as INTEGER;		// '...' as INTEGER, casts string to int. '<<' Adds an entry to a list
 
 				// PRINT keyword currently can't work with expressions, workaround is to store string concatenation in a variable and then print
-				printStr = "Add leftList value " + parseNum; print printStr; 
+				// printStr = "Add leftList value " + parseNum; print printStr; 
 				parseNum = "";
 			else:
 			end;
@@ -28,7 +28,7 @@ loop DAY lines:								// Loop through all lines of DAY and set current line str
 	assert isLeft == 0: "Expected rightList value but was still parsing leftList!";
 	rightList << parseNum as INTEGER;
 
-	printStr = "Add rightList value " + parseNum; print printStr;
+	// printStr = "Add rightList value " + parseNum; print printStr;
 	numLines = numLines + 1;
 loopstop;
 
@@ -48,5 +48,6 @@ loop leftList chars:				// Loop 'ID' chars: syntax works for lists and strings a
 	i = i + 1;
 loopstop;
 
+assert totalDistance == 1319616: "Solution broke!";
 result = "GREEN: " + totalDistance as STRING;
 print result;

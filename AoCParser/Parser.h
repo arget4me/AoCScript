@@ -132,6 +132,8 @@ public:
 class TreeNode
 {
 public:
+	virtual ~TreeNode() = default;
+
 	virtual void print() = 0;
 	virtual void eval(RuntimeGlobals* globals) = 0;
 };
@@ -140,6 +142,7 @@ class Statement : public TreeNode
 {
 public:
 	Statement(TreeNode* statement) : statement(statement) {}
+	virtual ~Statement() override = default;
 	TreeNode* statement;
 	virtual void print() override {
 		statement->print(); std::cout << ";\n";
@@ -155,6 +158,7 @@ class IS_OPERATOR : public TreeNode
 {
 public:
 	IS_OPERATOR(TreeNode* left) : left(left) {}
+	virtual ~IS_OPERATOR() override = default;
 	TreeNode* left;
 };
 
@@ -162,6 +166,7 @@ class IS_DIGIT : public IS_OPERATOR
 {
 public:
 	IS_DIGIT(TreeNode* left) : IS_OPERATOR(left) {}
+	virtual ~IS_DIGIT() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " IS DIGIT";
@@ -192,6 +197,7 @@ class IS_ALPHA : public IS_OPERATOR
 {
 public:
 	IS_ALPHA(TreeNode* left) : IS_OPERATOR(left) {}
+	virtual ~IS_ALPHA() override = default;
 
 	virtual void print() override {
 		std::cout << "(";
@@ -223,6 +229,7 @@ class OPERATOR : public TreeNode
 {
 public:
 	OPERATOR(TreeNode* left, TreeNode* right) : left(left), right(right) {}
+	virtual ~OPERATOR() override = default;
 	TreeNode* left;
 	TreeNode* right;
 };
@@ -232,6 +239,7 @@ class ADD : public OPERATOR
 {
 public:
 	ADD(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~ADD() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " + "; right->print();
@@ -267,6 +275,7 @@ class SUBTRACT : public OPERATOR
 {
 public:
 	SUBTRACT(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~SUBTRACT() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " - "; right->print();
@@ -288,6 +297,7 @@ class MULT : public OPERATOR
 {
 public:
 	MULT(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~MULT() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " * "; right->print();
@@ -309,6 +319,7 @@ class DIV : public OPERATOR
 {
 public:
 	DIV(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~DIV() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " / "; right->print();
@@ -330,6 +341,7 @@ class MODULO : public OPERATOR
 {
 public:
 	MODULO(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~MODULO() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " MODULO "; right->print();
@@ -351,6 +363,7 @@ class CAST : public TreeNode
 {
 public:
 	CAST(TreeNode* left, VariableType type) : left(left), type(type) {}
+	virtual ~CAST() override = default;
 	TreeNode* left;
 	VariableType type;
 
@@ -367,6 +380,7 @@ class GREATER_THAN : public OPERATOR
 {
 public:
 	GREATER_THAN(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~GREATER_THAN() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " > "; right->print();
@@ -388,6 +402,7 @@ class GREATER_EQUALS : public OPERATOR
 {
 public:
 	GREATER_EQUALS(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~GREATER_EQUALS() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " >= "; right->print();
@@ -409,6 +424,7 @@ class LESS_THAN : public OPERATOR
 {
 public:
 	LESS_THAN(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~LESS_THAN() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " < "; right->print();
@@ -430,6 +446,7 @@ class LESS_EQUALS : public OPERATOR
 {
 public:
 	LESS_EQUALS(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~LESS_EQUALS() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " <= "; right->print();
@@ -451,6 +468,7 @@ class IS_EQUAL : public OPERATOR
 {
 public:
 	IS_EQUAL(TreeNode* left, TreeNode* right) : OPERATOR(left, right) {}
+	virtual ~IS_EQUAL() override = default;
 	virtual void print() override {
 		std::cout << "(";
 		left->print(); std::cout << " == "; right->print();
@@ -472,6 +490,7 @@ class NEGATE : public TreeNode
 {
 public:
 	NEGATE(TreeNode* arg) :arg(arg) {}
+	virtual ~NEGATE() override = default;
 	TreeNode* arg;
 
 	virtual void print() override {
@@ -491,6 +510,7 @@ class ID : public TreeNode
 {
 public:
 	ID(std::string str) : str(str) {}
+	virtual ~ID() override = default;
 	std::string str;
 
 public:
@@ -520,6 +540,7 @@ class ARRAY_SIZE : public TreeNode
 {
 public:
 	ARRAY_SIZE(TreeNode* id) :id(id) {}
+	virtual ~ARRAY_SIZE() override = default;
 	TreeNode* id;
 
 	virtual void print() override {
@@ -552,6 +573,7 @@ class ARRAY_INDEXING : public TreeNode
 {
 public:
 	ARRAY_INDEXING(TreeNode* id, TreeNode* expression) :id(id), expression(expression) {}
+	virtual ~ARRAY_INDEXING() override = default;
 	TreeNode* id;
 	TreeNode* expression;
 
@@ -636,13 +658,13 @@ class PRINT_ID : public TreeNode
 {
 public:
 	PRINT_ID(TreeNode* id) : id(id) {}
+	virtual ~PRINT_ID() override = default;
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
 	virtual void eval(RuntimeGlobals* globals) override {
-		id->eval(globals);
+		
 		std::string id_name = reinterpret_cast<ID*>(id)->str;
-		StackVariable var = globals->pop_var();
 		std::cout << "Simon Says: " << id_name << "\t= ";
 
 		if (globals->lists.find(id_name) != globals->lists.end())
@@ -676,16 +698,20 @@ public:
 			}
 			std::cout << " ]";
 		}
-		else if (var.type == VariableType::INTEGER) {
-			std::cout << var.intValue;
-		}
-		else if (var.type == VariableType::STRING) {
-			std::cout << "\'" << ColorizeString(var.strValue);
-			ResetConsoleColor();
-			std::cout << "\'";
-		}
-		else if (var.type == VariableType::FLOAT) {
-			std::cout << std::fixed << std::setprecision(2) << var.fltValue;
+		else {
+			id->eval(globals);
+			StackVariable var = globals->pop_var();
+			if (var.type == VariableType::INTEGER) {
+				std::cout << var.intValue;
+			}
+			else if (var.type == VariableType::STRING) {
+				std::cout << "\'" << ColorizeString(var.strValue);
+				ResetConsoleColor();
+				std::cout << "\'";
+			}
+			else if (var.type == VariableType::FLOAT) {
+				std::cout << std::fixed << std::setprecision(2) << var.fltValue;
+			}
 		}
 		std::cout << "\n";
 	}
@@ -695,6 +721,7 @@ class PRINT_STR : public TreeNode
 {
 public:
 	PRINT_STR(TreeNode* id) : id(id) {}
+	virtual ~PRINT_STR() override = default;
 	TreeNode* id;
 public:
 	virtual void print() override { std::cout << "print: "; id->print(); }
@@ -714,6 +741,7 @@ class PRINT_DAY : public TreeNode
 {
 public:
 	PRINT_DAY() {}
+	virtual ~PRINT_DAY() override = default;
 public:
 	virtual void print() override { std::cout << "print: DAY"; }
 	virtual void eval(RuntimeGlobals* globals) override {
@@ -727,6 +755,7 @@ class LOAD : public TreeNode
 {
 public:
 	LOAD(TreeNode* str) : str(str) {}
+	virtual ~LOAD() override = default;
 	TreeNode* str;
 public:
 	virtual void print() override { std::cout << "load: "; str->print(); }
@@ -737,6 +766,7 @@ class EQUALS : public TreeNode
 {
 public:
 	EQUALS(TreeNode* id, TreeNode* expression) : id(id), expression(expression) {}
+	virtual ~EQUALS() override = default;
 	TreeNode* id;
 	TreeNode* expression;
 public:
@@ -756,6 +786,7 @@ class LIST_CREATE : public TreeNode
 public:
 	LIST_CREATE(TreeNode* id, bool sorted, VariableType type)
 		: id(id), sorted(sorted), type(type) {}
+	virtual ~LIST_CREATE() override = default;
 	TreeNode* id;
 	bool sorted;
 	VariableType type;
@@ -784,6 +815,7 @@ class LIST_ADD : public TreeNode
 public:
 	LIST_ADD(TreeNode* id, TreeNode* expression)
 		: id(id), expression(expression) {}
+	virtual ~LIST_ADD() override = default;
 	TreeNode* id;
 	TreeNode* expression;
 public:
@@ -819,6 +851,7 @@ class IF : public TreeNode
 {
 public:
 	IF(TreeNode* condition, std::vector<TreeNode*> statements, std::vector<TreeNode*> else_statements) : condition(condition), statements(statements), else_statements(else_statements) {}
+	virtual ~IF() override = default;
 	TreeNode* condition;
 	std::vector<TreeNode*> statements;
 	std::vector<TreeNode*> else_statements;
@@ -862,6 +895,7 @@ class ASSERT : public TreeNode
 {
 public:
 	ASSERT(TreeNode* condition, TreeNode* str) : condition(condition), str(str) {}
+	virtual ~ASSERT() override = default;
 	TreeNode* condition;
 	TreeNode* str;
 public:
@@ -895,6 +929,7 @@ class LOOP : public TreeNode
 {
 public:
 	LOOP(TreeNode* times, std::vector<TreeNode*> statements) : times(times), statements(statements) {}
+	virtual ~LOOP() override = default;
 	TreeNode* times;
 	std::vector<TreeNode*> statements;
 public:
@@ -925,6 +960,7 @@ class LOOP_ITERATOR : public TreeNode
 {
 public:
 	LOOP_ITERATOR(TreeNode* id, std::vector<TreeNode*> statements) : id(id), statements(statements) {}
+	virtual ~LOOP_ITERATOR() override = default;
 	TreeNode* id;
 	std::vector<TreeNode*> statements;
 public:
@@ -1008,6 +1044,7 @@ class LOOP_DAY : public TreeNode
 {
 public:
 	LOOP_DAY(std::vector<TreeNode*> statements) : statements(statements) {}
+	virtual ~LOOP_DAY() override = default;
 	std::vector<TreeNode*> statements;
 public:
 	virtual void print() override {
@@ -1037,6 +1074,7 @@ class STRING : public TreeNode
 {
 public:
 	STRING(std::string str) : str(str) {}
+	virtual ~STRING() override = default;
 	std::string str;
 public:
 	virtual void print() override { std::cout << str; }
@@ -1050,6 +1088,7 @@ class INTEGER : public TreeNode
 {
 public:
 	INTEGER(int num) : num(num) {}
+	virtual ~INTEGER() override = default;
 	int num;
 public:
 	virtual void print() override { std::cout << num; }
@@ -1063,6 +1102,7 @@ class FLOAT : public TreeNode
 {
 public:
 	FLOAT(float num) : num(num) {}
+	virtual ~FLOAT() override = default;
 	float num;
 public:
 	virtual void print() override { std::cout << num; }

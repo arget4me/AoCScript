@@ -21,3 +21,7 @@ loopstop;
 a = 4*a + c2a + 12 - a/3*5 +1;
 print a;
 simon says c2a;
+
+assert a == 114 : "MATH IS WRONG!";
+assert c2a == -8 : "MATH IS WRONG!";
+print "SUCCESS!";

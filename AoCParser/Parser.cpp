@@ -10,6 +10,7 @@
 bool ReadFile(const std::string& filePath, std::string& fileContents) {
 	std::ifstream file(filePath);
 	if (!file.is_open()) {
+		throw std::invalid_argument("Load input file not found: " + filePath);
 		return false;
 	}
 
@@ -506,7 +507,8 @@ bool Parser::ScanLoop(Token t, TreeNode** outNode)
 
 		if (id != nullptr) {
 			// Only case id is allocated is if ScanID succeded but the other conditions weren't met. Thus 'id' is not accurately parsed.
-			delete id;
+			// Parser destructor will take care of it.
+			id = nullptr;
 		}
 
 		TreeNode* times = id;
@@ -609,12 +611,7 @@ bool Parser::ScanStatement(Token t, TreeNode** outNode, bool programStatement)
 		|| ScanListDeclaration(t, &statement)
 		) {
 		if (tokenizer.GetNextToken(t) && t.type == TokenType::SEMICOLON) {
-			if (programStatement) {
-				*outNode = new Statement(statement);
-			}
-			else {
-				REGISTER_PTR(new Statement(statement), *outNode);
-			}
+			REGISTER_PTR(new Statement(statement), *outNode);
 			return true;
 		}
 		else {

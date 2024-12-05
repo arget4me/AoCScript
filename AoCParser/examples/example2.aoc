@@ -17,4 +17,8 @@ end;
 a = 4*a + c2a + 12 - a/3*5 +1;
 print a;
 simon says c2a;
-
+assert a == 69 : "MATH IS WRONG!";
+assert f == 0 : "MATH IS WRONG!";
+assert g == 3 : "MATH IS WRONG!";
+assert c2a == -53 : "MATH IS WRONG!";
+print "SUCCESS!";

@@ -1,6 +1,6 @@
-size = 10;
+count = 10;
 i = 0;
-loop size times:
+loop count times:
 	simon says i;
 	if i modulo 2 == 0:
 		print "EVEN";
@@ -11,8 +11,8 @@ loop size times:
 loopstop;
 
 print i;
-print size;
-assert size == 10 : "'size' must be equal to '10' at this point";
-assert i == 10 : "'i' must be equal to 'size' at this point";
+print count;
+assert count == 10 : "'count' must be equal to '10' at this point";
+assert i == 10 : "'i' must be equal to 'count' at this point";
 
 print "SUCCESS!";

@@ -6,6 +6,7 @@ bool RunCode(std::string path, bool printSyntax = false)
 	std::string code;
 	if (!ReadFile(path, code))
 	{
+		throw std::invalid_argument("File not found: " + path);
 		return false;
 	}
 
@@ -38,6 +39,7 @@ void RunExamples() {
 	RunExample("examples/example5.aoc");
 	RunExample("examples/example6.aoc");
 	RunExample("examples/example7.aoc");
+	RunExample("examples/example8.aoc");
 	
 	std::cout << "Examples DONE!\n" << std::endl;
 }
@@ -45,7 +47,7 @@ void RunExamples() {
 void RunTest(std::string path, bool& setOnFail)
 {
 	try {
-		RunCode(path, true);
+		RunCode(path, false);
 	}
 	catch (const std::invalid_argument& e) {
 		(void)e; // Won't use the exception object since i should already be handled, will just display fail message.
@@ -53,10 +55,30 @@ void RunTest(std::string path, bool& setOnFail)
 	}
 }
 
-void RunTests() {
+void RunAllTests()
+{
 	bool testsFailed = false;
 	std::cout << "RUNNING TESTS\n" << std::endl;
 	RunTest("tests/aoc_day1.aoc", testsFailed);
+	RunTest("tests/aoc_day1b.aoc", testsFailed);
+	RunTest("tests/day2.aoc", testsFailed);
+
+	if (testsFailed) {
+		PushConsoleColor(CONSOLE_COLOR::RED);
+		std::cout << "Tests FAILED!\n" << std::endl;
+		PopConsoleColor();
+	}
+	else {
+		PushConsoleColor(CONSOLE_COLOR::GREEN);
+		std::cout << "Tests SUCCESS!\n" << std::endl;
+		PopConsoleColor();
+	}
+}
+
+void RunTests() {
+	bool testsFailed = false;
+	std::cout << "RUNNING TESTS\n" << std::endl;
+	RunTest("tests/day2.aoc", testsFailed);
 
 	if (testsFailed) {
 		PushConsoleColor(CONSOLE_COLOR::RED);
@@ -81,6 +103,9 @@ int main(int argc, char* argv[])
 		}
 	}
 	RunTests();
+#elif defined(TEST_ALL)
+	RunExamples();
+	RunAllTests();
 #else
 	if (argc != 2) {
 		PushConsoleColor(CONSOLE_COLOR::RED);

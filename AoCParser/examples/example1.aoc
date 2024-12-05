@@ -9,3 +9,4 @@ simon says c2a;
 
 assert a == 66: "Math is broken. 'a' is wrong";
 assert c2a == -56: "Math is broken. 'c2a' is wrong";
+print "SUCCESS!";

@@ -1,0 +1,15 @@
+sorted INTEGER list sortList;
+
+sortList << 1;
+sortList << 3;
+sortList << 2;
+
+print sortList;
+
+unsorted INTEGER list unsortList;
+
+unsortList << 1;
+unsortList << 3;
+unsortList << 2;
+
+print unsortList;

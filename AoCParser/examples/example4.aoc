@@ -75,5 +75,7 @@ assert i > a : "i must be larger than a";
 print "This won't run if assert fails";
 print a;
 
-
+print "SUCCESS! And next line should fail!";
 assert 0 : "Assert always";
+
+print "FAILED! Should never print this!";
