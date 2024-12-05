@@ -1,0 +1,7 @@
+load "input/2024_Day3.txt";
+loop DAY lines:
+	print LINE;
+	loop LINE chars:
+		// print CHAR;
+	loopstop;
+loopstop;

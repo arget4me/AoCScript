@@ -63,6 +63,7 @@ void RunAllTests()
 	RunTest("days/day1b.aoc", testsFailed);
 	RunTest("days/day2.aoc", testsFailed);
 	RunTest("days/day2b.aoc", testsFailed);
+	RunTest("days/day3.aoc", testsFailed);
 
 	if (testsFailed) {
 		PushConsoleColor(CONSOLE_COLOR::RED);
@@ -79,7 +80,7 @@ void RunAllTests()
 void RunTests() {
 	bool testsFailed = false;
 	std::cout << "RUNNING TESTS\n" << std::endl;
-	RunTest("days/day2b.aoc", testsFailed);
+	RunTest("days/day3.aoc", testsFailed);
 
 	if (testsFailed) {
 		PushConsoleColor(CONSOLE_COLOR::RED);
