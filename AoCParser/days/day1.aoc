@@ -1,4 +1,4 @@
-load "days/2024_Day1.txt";					// Load input for this day and store it in keyword DAY
+load "input/2024_Day1.txt";					// Load input for this day and store it in keyword DAY
 
 // two sorted lists of numbers (insertion sort), unsorted can be used as well with keyword 'unsorted'.
 sorted INTEGER list rightList;

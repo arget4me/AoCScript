@@ -1,5 +1,4 @@
-load "days/2024_Day2.txt";
-print DAY;
+load "input/2024_Day2.txt";
 
 safeReports = 0;
 loop DAY lines:

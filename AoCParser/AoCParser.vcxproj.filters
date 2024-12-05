@@ -12,11 +12,11 @@
     <Filter Include="examples">
       <UniqueIdentifier>{fb0c8272-a766-4cff-8fdf-53f577b9524a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{59858e55-b7fe-4191-80cf-a87b9463ef26}</UniqueIdentifier>
+    <Filter Include="input">
+      <UniqueIdentifier>{9b6ddcc1-bc27-4133-b9a9-5cfdcd2aa5e2}</UniqueIdentifier>
     </Filter>
     <Filter Include="days">
-      <UniqueIdentifier>{9b6ddcc1-bc27-4133-b9a9-5cfdcd2aa5e2}</UniqueIdentifier>
+      <UniqueIdentifier>{59858e55-b7fe-4191-80cf-a87b9463ef26}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -67,28 +67,28 @@
     <None Include="examples\example7.aoc">
       <Filter>examples</Filter>
     </None>
-    <None Include="tests\aoc_day1_test.aoc">
-      <Filter>Tests</Filter>
+    <None Include="examples\example8.aoc">
+      <Filter>examples</Filter>
     </None>
-    <None Include="tests\aoc_day1.aoc">
-      <Filter>Tests</Filter>
+    <None Include="days\day1.aoc">
+      <Filter>days</Filter>
     </None>
-    <None Include="tests\aoc_day1b.aoc">
-      <Filter>Tests</Filter>
+    <None Include="days\day1b.aoc">
+      <Filter>days</Filter>
     </None>
-    <None Include="tests\day2.aoc">
-      <Filter>Tests</Filter>
+    <None Include="days\day2.aoc">
+      <Filter>days</Filter>
+    </None>
+    <None Include="days\day2b.aoc">
+      <Filter>days</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="days\2023_Day1.txt">
-      <Filter>days</Filter>
+    <Text Include="input\2024_Day1.txt">
+      <Filter>input</Filter>
     </Text>
-    <Text Include="days\2024_Day1.txt">
-      <Filter>days</Filter>
-    </Text>
-    <Text Include="days\2024_Day2.txt">
-      <Filter>days</Filter>
+    <Text Include="input\2024_Day2.txt">
+      <Filter>input</Filter>
     </Text>
   </ItemGroup>
 </Project>

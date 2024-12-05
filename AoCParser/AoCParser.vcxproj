@@ -257,13 +257,11 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
     </None>
+    <None Include="days\day1.aoc" />
+    <None Include="days\day1b.aoc" />
+    <None Include="days\day2.aoc" />
+    <None Include="days\day2b.aoc" />
     <None Include="examples\example8.aoc" />
-    <None Include="tests\aoc_day1.aoc" />
-    <None Include="tests\aoc_day1b.aoc" />
-    <None Include="tests\aoc_day1_test.aoc">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
-    </None>
     <None Include="examples\example1.aoc">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
@@ -300,14 +298,10 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
     </None>
-    <None Include="tests\day2.aoc" />
-    <None Include="tests\day2b.aoc" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="days\2023_Day1.txt" />
-    <Text Include="days\2024_Day1.txt" />
-    <Text Include="days\2024_Day2.txt" />
-    <Text Include="days\day2_test.txt" />
+    <Text Include="input\2024_Day1.txt" />
+    <Text Include="input\2024_Day2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
