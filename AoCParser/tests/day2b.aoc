@@ -1,0 +1,82 @@
+load "days/2024_Day2.txt";
+print DAY;
+
+safeReports = 0;
+loop DAY lines:
+	unsorted INTEGER list report;
+	parseNum = "";
+	loop LINE chars:
+		if CHAR is DIGIT:					// Logic check to compare if CHAR is '0' - '9'
+			parseNum = parseNum + CHAR;		// Concatenate string
+		else:
+			if parseNum size > 0:
+				report << parseNum as INTEGER;		// '...' as INTEGER, casts string to int. '<<' Adds an entry to a list
+				parseNum = "";
+			else:end;
+		end;
+	loopstop;
+
+	// Must also add the last number if parsing
+	if parseNum size > 0:
+		report << parseNum as INTEGER;		// '...' as INTEGER, casts string to int. '<<' Adds an entry to a list
+		parseNum = "";
+	else:end;
+	
+	assert report size >= 2 : "Nothing to compare if not at least two numbers";
+	
+	
+	
+	j = 0;
+	safeVariant = 0;
+	loop (report size) times:
+		if safeVariant:else:
+
+			unsorted INTEGER list saferReport;
+			i = 0;
+			loop (report size) times:
+				if i == j:
+					//print "SKIP";
+				else:
+					saferReport << report[i];
+				end;
+				i = i + 1;
+			loopstop;
+
+
+			isGrowing = saferReport[1] > saferReport[0];
+			isSafe = 1;
+			i = 1;
+			loopTimes = (saferReport size) - i;
+			loop loopTimes times:
+				if isGrowing:
+					diff = saferReport[i] - saferReport[i-1];
+					if saferReport[i-1] >= saferReport[i]:
+						isSafe = 0;
+					else:end;
+				else:
+					diff = saferReport[i-1] - saferReport[i];
+					if saferReport[i-1] <= saferReport[i]:
+						isSafe = 0;
+					else:end;
+				end;
+
+				if diff > 3:
+					isSafe = 0;
+				else:end;
+				i = i + 1;
+			loopstop;
+
+			if isSafe:
+				print "Safe report!";
+				print saferReport;
+				safeReports = safeReports + 1;
+			else:end;
+			safeVariant = isSafe;
+		end;
+		j = j + 1;
+	loopstop;
+loopstop;
+
+assert safeReports == 689: "Solution broke!";
+result = "GREEN Safe reports number is " + safeReports as STRING;
+print result;

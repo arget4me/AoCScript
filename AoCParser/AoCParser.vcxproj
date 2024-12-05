@@ -73,14 +73,14 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -301,11 +301,13 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug Examples|x64'">false</DeploymentContent>
     </None>
     <None Include="tests\day2.aoc" />
+    <None Include="tests\day2b.aoc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="days\2023_Day1.txt" />
     <Text Include="days\2024_Day1.txt" />
     <Text Include="days\2024_Day2.txt" />
+    <Text Include="days\day2_test.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
