@@ -1,0 +1,127 @@
+load "input/2024_Day3.txt";
+
+unsorted STRING list keywords;
+keywords << "mul(";
+keywords << ",";
+keywords << ")";
+
+
+unsorted STRING list states;
+states << "don't()";
+states << "do()";
+
+finalResult = 0;
+
+enable = 1;
+
+loop DAY lines:
+	startIdx = 0;
+	print LINE;
+	loop LINE chars:
+		leftValue = -1;
+		rightValue = -1;
+		if ITER < startIdx:
+		else:
+			startIdx = ITER;
+			loop states chars:
+				stateKeyword = CHAR;
+				match = 0;
+				loop (stateKeyword size) times:
+					
+					index = startIdx + ITER;
+					if (index >= (LINE size)): break; else:end;
+					if (stateKeyword[ITER] == LINE[index]) == 0:
+						break;
+					else:end;
+				
+					if ITER == (CHAR size - 1):
+						printStr = stateKeyword;
+						if (stateKeyword size) == 4:
+							printStr = "GREEN: " + stateKeyword;
+						else:
+							printStr = "RED: " + stateKeyword;
+						end;
+						print printStr;
+						
+						match = 1;
+						startIdx = index + 1;
+						break;
+					else:end;
+					print ITER;
+				loopstop;
+				if match == 1:
+					enable = ITER; 
+					print enable;
+					break; 
+				else:end;
+			loopstop;
+
+
+			if enable :
+				loop keywords chars:
+					keyword = CHAR;
+					match = 0;
+					nextIndex = 0;
+					loop keyword size times:
+						index = startIdx + ITER;
+						if (index >= (LINE size)): break; else:end;
+						if (keyword[ITER] == LINE[index]) == 0:
+							break;
+						else:end;
+				
+						if ITER == (keyword size - 1):
+							match = 1;
+							nextIndex = index + 1;
+						else:end;
+					loopstop;
+					if match == 0: break; else:end;
+
+					parseNum = "";
+					if (ITER == 0) + (ITER == 1):
+						loop 3 times:
+							index = nextIndex + ITER;
+							if (index >= (LINE size)): break; else:end;
+
+							if LINE[index] is DIGIT:
+								parseNum = parseNum + LINE[index];
+							else:
+								break;
+							end;
+						loopstop;
+					else:end;
+
+					if ITER == 0:
+						// Parse left
+						if (parseNum size) > 0:
+							leftValue = parseNum as INTEGER;
+							nextIndex = nextIndex + parseNum size;
+						else: break; end;
+					else:end;
+
+					if ITER == 1:
+						// Parse right
+						if (parseNum size) > 0:
+							rightValue = parseNum as INTEGER;
+							nextIndex = nextIndex + parseNum size;
+						else: break; end;
+					else:end;
+
+					if ITER == 2:
+						// Multiply
+						print leftValue;
+						print rightValue;
+						mult = leftValue * rightValue;
+						finalResult = finalResult + mult;
+						print mult;
+					else:end;
+
+					startIdx = nextIndex;
+				loopstop;
+			else:end;
+		end;
+		// print CHAR;
+	loopstop;
+loopstop;
+
+print finalResult;
+assert finalResult == 82733683 : "Solution Broke";
