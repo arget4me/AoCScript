@@ -88,12 +88,14 @@ struct List
 
 	virtual void push_var(StackVariable var);
 	virtual StackVariable pop_var();
+	virtual void set_var(int index, StackVariable expressionVar);
 };
 
 struct SortedList : List
 {
 	SortedList(VariableType type) : List(type) {}
 	virtual void push_var(StackVariable var) override;
+	virtual void set_var(int index, StackVariable expressionVar) override;
 };
 
 class RuntimeGlobals
@@ -707,6 +709,69 @@ public:
 				RuntimeError("Variable of type " + VariableTypeToString(var.type) + " can't be indexed.");
 			}
 		}
+	}
+};
+
+class EQUALS_INDEXED : public TreeNode
+{
+public:
+	EQUALS_INDEXED(TreeNode* id, TreeNode* index, TreeNode* expression) : id(id), index(index), expression(expression) {}
+	virtual ~EQUALS_INDEXED() override = default;
+	TreeNode* id;
+	TreeNode* index;
+	TreeNode* expression;
+public:
+	virtual void print() override { id->print(); std::cout << " = "; expression->print(); }
+	virtual void eval(RuntimeGlobals* globals) override
+	{
+		std::string id_name = reinterpret_cast<ID*>(id)->str;
+
+		index->eval(globals);
+		StackVariable varIndex = globals->pop_var();
+		if (varIndex.type != VariableType::INTEGER) {
+			RuntimeError("Can't index array " + id_name + " with index of type " + VariableTypeToString(varIndex.type) + ". Only INTEGER indices are allowed.");
+		}
+
+		int index = varIndex.intValue;
+		if (index < 0) {
+			RuntimeError("Array index must be possitive: " + index);
+		}
+
+		expression->eval(globals);
+		StackVariable expressionVar = globals->pop_var();
+
+		if (globals->lists.find(id_name) != globals->lists.end())
+		{
+			List* list = globals->lists[id_name];
+			if (index >= list->list.size()) {
+				RuntimeError("Array index out of range: " + std::to_string(index)
+					+ ". Size = " + std::to_string(list->list.size()));
+			}
+
+			if (expressionVar.type != list->type)
+			{
+				RuntimeError("Can't add value of type {" + VariableTypeToString(expressionVar.type) + "} to list "
+					+ id_name + "<" + VariableTypeToString(list->type) + ">");
+			}
+
+			list->set_var(index, expressionVar);
+		}
+		else {
+			id->eval(globals);
+			StackVariable idVar = globals->pop_var();
+			if (idVar.type == VariableType::STRING) {
+				if (index >= idVar.strValue.length()) {
+					RuntimeError("Array index out of range: " + std::to_string(index)
+						+ ". Size = " + std::to_string(idVar.strValue.length()));
+				}
+
+				idVar.strValue[index] = expressionVar.strValue[0];
+				globals->variables[id_name] = idVar;
+			}
+			else {
+				RuntimeError("Variable of type " + VariableTypeToString(idVar.type) + " can't be indexed.");
+			}
+		}		
 	}
 };
 

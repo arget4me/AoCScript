@@ -13,3 +13,8 @@ unsortList << 3;
 unsortList << 2;
 
 print unsortList;
+
+unsortList[1] = 40;
+sortList[1] = 40;
+print sortList;
+print unsortList;

@@ -12,7 +12,7 @@
 							| BreakStatement ";"
 	BreakStatement		::= "break" | "noloop"
 	ListDeclaration		::= ("sorted" | "unsorted") VariableType "list" Identifier
-	Assignment			::= Identifier ( "=" ( Expression | "LINE" | String ) | ListAssignment )
+	Assignment			::= ( Identifier | Identifier "[" Expression "]") ( "=" ( Expression | "LINE" | String ) | ListAssignment )
 	ListAssignment		::= "<<" Expression
 	PrintStatement		::= ( "print" | "simon says" ) ( Identifier | String | "DAY" )
 	LoadStatement		::= "load" String

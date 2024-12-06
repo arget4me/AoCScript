@@ -285,6 +285,41 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 			}
 		}
 
+		// Indexed Assignment
+		if (t.type == TokenType::LBRACKET) {
+			std::string id_name = static_cast<ID*>(id)->str;
+			if (declaredLists.find(id_name) == declaredLists.end())
+			{
+				SyntaxError(tokenizer, t, "Using undeclared list : " + id_name);
+			}
+
+			TreeNode* index = nullptr;
+			if (!(tokenizer.GetNextToken(t) && ScanExpression(t, &index))) {
+				SyntaxError(tokenizer, t, "Expected index expression for assignment");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::RBRACKET)) {
+				SyntaxError(tokenizer, t, "Expected closing ']'");
+				return false;
+			}
+
+			if (!(tokenizer.GetNextToken(t) && t.type == TokenType::EQUALS)) {
+				SyntaxError(tokenizer, t, "Expected '=' operator for assignment");
+				return false;
+			}
+
+			TreeNode* expression = nullptr;
+			if (tokenizer.GetNextToken(t) && ScanExpression(t, &expression)) {
+				REGISTER_PTR(new EQUALS_INDEXED(id, index, expression), *outNode);
+				return true;
+			}
+			else {
+				SyntaxError(tokenizer, t, "Expected expression for list assignment");
+			}
+		}
+
+
 		// ListAssignment
 		if (t.type == TokenType::LIST_ADD) {
 			std::string id_name = static_cast<ID*>(id)->str;
@@ -755,6 +790,9 @@ void CAST::eval(RuntimeGlobals* globals) {
 
 void List::push_var(StackVariable var)
 {
+	if (var.type != type) {
+		RuntimeError("Can't add value of type {" + VariableTypeToString(var.type) + "} to list" + "<" + VariableTypeToString(type) + ">");
+	}
 	list.push_back(var);
 }
 
@@ -766,9 +804,23 @@ StackVariable List::pop_var()
 	return result;
 }
 
+void List::set_var(int index, StackVariable expressionVar)
+{
+	if (expressionVar.type != type) {
+		RuntimeError("Can't add value of type {" + VariableTypeToString(expressionVar.type) + "} to list" + "<" + VariableTypeToString(type) + ">");
+	}
+
+	if (index >= 0 && index < list.size()) {
+		list[index] = expressionVar;
+	}
+}
 
 void SortedList::push_var(StackVariable var)
 {
+	if (var.type != type) {
+		RuntimeError("Can't add value of type {" + VariableTypeToString(var.type) + "} to list" + "<" + VariableTypeToString(type) + ">");
+	}
+
 	auto insertion_sort = [](std::vector<StackVariable>& vec, StackVariable value) {
 		auto it = std::lower_bound(vec.begin(), vec.end(), value);
 		vec.insert(it, value);
@@ -777,17 +829,18 @@ void SortedList::push_var(StackVariable var)
 	insertion_sort(list, var);
 }
 
+void SortedList::set_var(int index, StackVariable expressionVar)
+{
+	if (expressionVar.type != type) {
+		RuntimeError("Can't add value of type {" + VariableTypeToString(expressionVar.type) + "} to list" + "<" + VariableTypeToString(type) + ">");
+	}
 
+	if (index >= 0 && index < list.size()) {
+		list[index] = expressionVar;
+	}
 
-
-
-
-
-
-
-
-
-
+	std::sort(list.begin(), list.end());
+}
 
 void RuntimeGlobals::push_var(StackVariable var)
 {
