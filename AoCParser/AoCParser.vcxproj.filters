@@ -88,6 +88,9 @@
     <None Include="days\day3b.aoc">
       <Filter>days</Filter>
     </None>
+    <None Include="days\day4.aoc">
+      <Filter>days</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input\2024_Day1.txt">
@@ -97,6 +100,9 @@
       <Filter>input</Filter>
     </Text>
     <Text Include="input\2024_Day3.txt">
+      <Filter>input</Filter>
+    </Text>
+    <Text Include="input\2024_Day4.txt">
       <Filter>input</Filter>
     </Text>
   </ItemGroup>

@@ -817,12 +817,12 @@ public:
 
 		if (globals->lists.find(id_name) != globals->lists.end())
 		{
-			std::cout << "[ ";
+			std::cout << "[\n";
 			List* list = globals->lists[id_name];
 			bool first = true;
 			for (StackVariable& var : list->list)
 			{
-				if (!first) {
+				if (!first && list->type != VariableType::STRING) {
 					std::cout << ", ";
 				}
 				else {
@@ -836,6 +836,7 @@ public:
 					break;
 				case VariableType::STRING:
 					std::cout << var.strValue;
+					std::cout << "\n";
 					break;
 				case VariableType::FLOAT:
 					std::cout << var.fltValue;
@@ -844,7 +845,7 @@ public:
 					break;
 				}
 			}
-			std::cout << " ]";
+			std::cout << "\n]";
 		}
 		else {
 			id->eval(globals);
@@ -1337,4 +1338,5 @@ private:
 	std::vector<TreeNode*> nodes;
 	std::vector<TreeNode*> statements;
 	std::map<std::string, char> declaredLists;
+	std::map<std::string, char> declaredVariables;
 };

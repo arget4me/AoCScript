@@ -263,6 +263,7 @@
     <None Include="days\day2b.aoc" />
     <None Include="days\day3.aoc" />
     <None Include="days\day3b.aoc" />
+    <None Include="days\day4.aoc" />
     <None Include="examples\example8.aoc" />
     <None Include="examples\example1.aoc">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
@@ -305,6 +306,7 @@
     <Text Include="input\2024_Day1.txt" />
     <Text Include="input\2024_Day2.txt" />
     <Text Include="input\2024_Day3.txt" />
+    <Text Include="input\2024_Day4.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

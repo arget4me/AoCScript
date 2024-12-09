@@ -1,0 +1,99 @@
+load "input/2024_Day4.txt";
+
+print DAY;
+
+// Convert DAY input to unsorted list
+unsorted STRING list grid;
+loop DAY lines:
+	grid << LINE;
+loopstop;
+
+// Get grid width and height
+height = grid size;
+
+firstLine = grid[0];
+width = firstLine size;
+
+print height;
+print width;
+
+// For each char check diaginal, vertical, horizontal.
+// For each direction check for XMAS backwards and forwards.
+
+wordSearch = "XMAS";
+wordBackwardsSearch = "SAMX";
+
+wordsFound = 0;
+// Starting from top left corner means no need to search backwards in the grid (still needs to search for the backwards word)
+loop height times:
+	y = ITER;
+	loop width times:
+		x = ITER;
+
+		horizontal = "";
+		vertical = "";
+		diagonalR = "";
+		diagonalL = "";
+		loop (wordSearch size) times:
+			// Horizontal
+			horizontalX = x + ITER;
+			if horizontalX < width: // Starting at 0 and only increasing
+				line = grid[y];
+				horizontal = horizontal + line[horizontalX];
+			else:end;
+
+			// Vertical
+			horizontalY = y + ITER;
+			if horizontalY < height: // Starting at 0 and only increasing
+				line = grid[horizontalY];
+				vertical = vertical + line[x];
+			else:end;
+
+			// Diagonal right
+			if (horizontalY < height) * (horizontalX < width): // Starting at 0 and only increasing
+				line = grid[horizontalY];
+				diagonalR = diagonalR + line[horizontalX];
+			else:end;
+			
+			// Diagonal left
+			horizontalLeftX = x - ITER;
+			if (horizontalY < height) * (horizontalX < width): // Starting at 0 and only increasing
+				line = grid[horizontalY];
+				diagonalL = diagonalL + line[horizontalX];
+			else:end;
+		loopstop;
+		// if (horizontal size) == (wordSearch size): print horizontal; else:end;
+		// if (vertical size) == (wordSearch size): print vertical; else:end;
+		// if (diagonalR size) == (wordSearch size): print diagonalR; else:end;
+		// if (diagonalL size) == (wordSearch size): print diagonalL; else:end;
+		
+		newWordFound = 0;
+		if (horizontal == wordSearch) + (horizontal == wordBackwardsSearch):
+			wordsFound = wordsFound + 1;
+			newWordFound = 1;
+		else:end;
+		if (vertical == wordSearch) + (vertical == wordBackwardsSearch):
+			wordsFound = wordsFound + 1;
+			newWordFound = 1;
+		else:end;
+		if (diagonalL == wordSearch) + (diagonalL == wordBackwardsSearch):
+			wordsFound = wordsFound + 1;
+			newWordFound = 1;
+		else:end;
+		if (diagonalR == wordSearch) + (diagonalR == wordBackwardsSearch):
+			wordsFound = wordsFound + 1;
+			newWordFound = 1;
+		else:end;
+
+		if newWordFound == 0:
+			line = grid[y];
+			line[x] = ".";
+			grid[y] = line;
+			// print grid;
+		else:end;
+	loopstop;
+loopstop;
+
+print grid;
+
+print wordsFound;

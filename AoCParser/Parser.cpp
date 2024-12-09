@@ -277,6 +277,9 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 		if (t.type == TokenType::EQUALS) {
 			TreeNode* expression = nullptr;
 			if (tokenizer.GetNextToken(t) && (ScanExpression(t, &expression) || ScanString(t, &expression))) {
+				std::string id_name = static_cast<ID*>(id)->str;
+				declaredVariables[id_name] = 0;
+
 				REGISTER_PTR(new EQUALS(id, expression), *outNode);
 				return true;
 			}
@@ -288,9 +291,9 @@ bool Parser::ScanAssignment(Token t, TreeNode** outNode)
 		// Indexed Assignment
 		if (t.type == TokenType::LBRACKET) {
 			std::string id_name = static_cast<ID*>(id)->str;
-			if (declaredLists.find(id_name) == declaredLists.end())
+			if (declaredLists.find(id_name) == declaredLists.end() && declaredVariables.find(id_name) == declaredVariables.end())
 			{
-				SyntaxError(tokenizer, t, "Using undeclared list : " + id_name);
+				SyntaxError(tokenizer, t, "Using undeclared list/variable : " + id_name);
 			}
 
 			TreeNode* index = nullptr;
