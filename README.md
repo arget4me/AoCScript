@@ -57,11 +57,11 @@
 
 ### Day 1
 
-![Gold Star](/screenshots/day1/gold_star.png)
-![Output](/screenshots/day1/result.png)
+![Gold Star](/screenshots/Day1/gold_star.png)
+![Output](/screenshots/Day1/result.png)
 
 Code from "tests/aoc_day1.aoc":
-![Code](/screenshots/day1/code_day1.png)
+![Code](/screenshots/Day1/code_day1.png)
 
 ### Code from "examples/example7.aoc":
 
